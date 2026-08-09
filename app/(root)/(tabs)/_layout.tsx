@@ -1,28 +1,46 @@
-import { Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs'
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
+import {
+	Icon,
+	Label,
+	NativeTabs,
+	VectorIcon,
+} from 'expo-router/unstable-native-tabs'
+import { Platform } from 'react-native'
 
-export default function TabLayout() {
+const renderTabIcon = (iosSymbol: string, androidName: string) =>
+	Platform.OS === 'ios' ? (
+		<Icon sf={iosSymbol as any} />
+	) : (
+		<Icon
+			androidSrc={
+				<VectorIcon family={MaterialCommunityIcons} name={androidName as any} />
+			}
+		/>
+	)
+const TabLayout = () => {
 	return (
 		<NativeTabs>
 			<NativeTabs.Trigger name='index'>
 				<Label>Home</Label>
-				<Icon sf='house.fill' />
+				{renderTabIcon('house.fill', 'home')}
 			</NativeTabs.Trigger>
 			<NativeTabs.Trigger name='transactions'>
 				<Label>Transactions</Label>
-				<Icon sf='list.bullet' />
+				{renderTabIcon('list.bullet', 'format-list-bulleted')}
 			</NativeTabs.Trigger>
 			<NativeTabs.Trigger name='add-transaction'>
 				<Label>Add Transaction</Label>
-				<Icon sf='plus.circle.fill' />
+				{renderTabIcon('plus.circle.fill', 'plus-circle-outline')}
 			</NativeTabs.Trigger>
 			<NativeTabs.Trigger name='assistant'>
-				<Label>ssistant</Label>
-				<Icon sf='plus.circle.fill' />
+				<Label>Assistant</Label>
+				{renderTabIcon('plus.circle.fill', 'robot')}
 			</NativeTabs.Trigger>
 			<NativeTabs.Trigger name='profile'>
 				<Label>Profile</Label>
-				<Icon sf='gear' />
+				{renderTabIcon('gear', 'account-circle-outline')}
 			</NativeTabs.Trigger>
 		</NativeTabs>
 	)
 }
+export default TabLayout
