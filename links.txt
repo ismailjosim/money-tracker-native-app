@@ -1,0 +1,7 @@
+https://clerk.com/
+https://supabase.com
+https://www.coderabbit.ai/
+https://github.com/piyush-eon/react-native-finance-platform
+
+
+to create native components use the shortcut: rnf
