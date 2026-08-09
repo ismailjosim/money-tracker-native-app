@@ -1,46 +1,123 @@
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
-import {
-	Icon,
-	Label,
-	NativeTabs,
-	VectorIcon,
-} from 'expo-router/unstable-native-tabs'
+import { Feather } from '@expo/vector-icons'
+import { Tabs } from 'expo-router'
+import { Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs'
 import { Platform } from 'react-native'
 
-const renderTabIcon = (iosSymbol: string, androidName: string) =>
-	Platform.OS === 'ios' ? (
-		<Icon sf={iosSymbol as any} />
-	) : (
-		<Icon
-			androidSrc={
-				<VectorIcon family={MaterialCommunityIcons} name={androidName as any} />
-			}
-		/>
-	)
-const TabLayout = () => {
+const useNativeTabs = Platform.OS === 'ios'
+
+export default function TabLayout() {
+	if (useNativeTabs) {
+		return (
+			<NativeTabs
+				backgroundColor='#0B0E14'
+				tintColor='#253BCE'
+				iconColor={{
+					default: '#5C5F68',
+					selected: '#253BCE',
+				}}
+				labelStyle={{
+					default: {
+						color: '#5C5F68',
+					},
+					selected: {
+						color: '#253BCE',
+					},
+				}}
+			>
+				<NativeTabs.Trigger name='index'>
+					<Icon sf='house.fill' />
+					<Label>Home</Label>
+				</NativeTabs.Trigger>
+
+				<NativeTabs.Trigger name='transactions'>
+					<Icon sf='list.bullet' />
+					<Label>Transactions</Label>
+				</NativeTabs.Trigger>
+
+				<NativeTabs.Trigger name='add-transaction'>
+					<Icon sf='plus.circle.fill' />
+					<Label>Add</Label>
+				</NativeTabs.Trigger>
+
+				<NativeTabs.Trigger name='assistant'>
+					<Icon sf='brain.head.profile' />
+					<Label>Assistant</Label>
+				</NativeTabs.Trigger>
+
+				<NativeTabs.Trigger name='profile'>
+					<Icon sf='person.fill' />
+					<Label>Profile</Label>
+				</NativeTabs.Trigger>
+			</NativeTabs>
+		)
+	}
+
+	// Android / Expo Go fallback
 	return (
-		<NativeTabs>
-			<NativeTabs.Trigger name='index'>
-				<Label>Home</Label>
-				{renderTabIcon('house.fill', 'home')}
-			</NativeTabs.Trigger>
-			<NativeTabs.Trigger name='transactions'>
-				<Label>Transactions</Label>
-				{renderTabIcon('list.bullet', 'format-list-bulleted')}
-			</NativeTabs.Trigger>
-			<NativeTabs.Trigger name='add-transaction'>
-				<Label>Add Transaction</Label>
-				{renderTabIcon('plus.circle.fill', 'plus-circle-outline')}
-			</NativeTabs.Trigger>
-			<NativeTabs.Trigger name='assistant'>
-				<Label>Assistant</Label>
-				{renderTabIcon('plus.circle.fill', 'robot')}
-			</NativeTabs.Trigger>
-			<NativeTabs.Trigger name='profile'>
-				<Label>Profile</Label>
-				{renderTabIcon('gear', 'account-circle-outline')}
-			</NativeTabs.Trigger>
-		</NativeTabs>
+		<Tabs
+			screenOptions={{
+				headerShown: false,
+
+				tabBarActiveTintColor: '#253BCE',
+				tabBarInactiveTintColor: '#5C5F68',
+
+				tabBarStyle: {
+					backgroundColor: '#0F1115',
+					borderTopColor: '#232838',
+					paddingTop: 4,
+					height: 70,
+				},
+			}}
+		>
+			<Tabs.Screen
+				name='index'
+				options={{
+					title: 'Home',
+					tabBarIcon: ({ color, size }) => (
+						<Feather name='home' size={size} color={color} />
+					),
+				}}
+			/>
+
+			<Tabs.Screen
+				name='transactions'
+				options={{
+					title: 'Transactions',
+					tabBarIcon: ({ color, size }) => (
+						<Feather name='list' size={size} color={color} />
+					),
+				}}
+			/>
+
+			<Tabs.Screen
+				name='add-transaction'
+				options={{
+					title: 'Add',
+					tabBarIcon: ({ color, size }) => (
+						<Feather name='plus-circle' size={size} color={color} />
+					),
+				}}
+			/>
+
+			<Tabs.Screen
+				name='assistant'
+				options={{
+					title: 'Assistant',
+					tabBarIcon: ({ color, size }) => (
+						<Feather name='cpu' size={size} color={color} />
+					),
+				}}
+			/>
+
+			<Tabs.Screen
+				name='profile'
+				options={{
+					title: 'Profile',
+					tabBarIcon: ({ color, size }) => (
+						<Feather name='user' size={size} color={color} />
+					),
+				}}
+			/>
+		</Tabs>
 	)
 }
-export default TabLayout
