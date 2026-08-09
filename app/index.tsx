@@ -17,23 +17,36 @@ const persons: Person[] = [
 
 export default function Index() {
 	return (
-		<SafeAreaView>
+		<SafeAreaView className='flex-1 bg-zinc-50'>
 			<FlatList
 				data={persons}
 				keyExtractor={(person) => person.id.toString()}
-				contentContainerStyle={{ padding: 16 }}
+				contentContainerClassName='p-5 gap-4'
 				renderItem={({ item }) => (
-					<View
-						style={{
-							backgroundColor: '#f9f9f9',
-							padding: 12,
-							borderRadius: 10,
-							marginBottom: 10,
-						}}
-					>
-						<Text style={{ fontWeight: 'bold' }}>{item.name}</Text>
-						<Text style={{ color: '#666' }}>{item.age}</Text>
-						<Text style={{ color: '#187cce' }}>{item.profession}</Text>
+					<View className='rounded-3xl bg-white p-5 shadow-sm border border-zinc-100'>
+						<View className='flex-row items-center'>
+							{/* Avatar */}
+							<View className='h-14 w-14 items-center justify-center rounded-full bg-blue-100'>
+								<Text className='text-xl font-bold text-blue-700'>
+									{item.name.charAt(0)}
+								</Text>
+							</View>
+
+							{/* Content */}
+							<View className='ml-4 flex-1'>
+								<Text className='text-lg font-semibold text-zinc-900'>
+									{item.name}
+								</Text>
+
+								<Text className='mt-1 text-zinc-500'>{item.age} years old</Text>
+
+								<View className='mt-3 self-start rounded-full bg-blue-50 px-3 py-1'>
+									<Text className='text-xs font-medium text-blue-700'>
+										{item.profession}
+									</Text>
+								</View>
+							</View>
+						</View>
 					</View>
 				)}
 			/>
