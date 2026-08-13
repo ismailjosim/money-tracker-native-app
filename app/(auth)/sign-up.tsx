@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import {
 	KeyboardAvoidingView,
 	Platform,
@@ -10,12 +10,13 @@ import {
 import SignUpForm from '@/components/auth/SignUpForm'
 import VerifyForm from '@/components/auth/VerifyForm'
 import SuccessScreen from '@/components/auth/SuccessScreen'
+import { useRouter } from 'expo-router'
 
 type Step = 'signup' | 'verify' | 'success'
 
 export default function SignUpScreen() {
 	const [step, setStep] = useState<Step>('signup')
-
+	const router = useRouter()
 	const [loading, setLoading] = useState(false)
 
 	const [firstName, setFirstName] = useState('')
@@ -161,11 +162,7 @@ export default function SignUpScreen() {
 							onPasswordChange={setPassword}
 							onConfirmPasswordChange={setConfirmPassword}
 							onSubmit={handleSignUp}
-							onSignIn={() => {
-								// TODO:
-								// router.replace('/sign-in')
-								Alert.alert('Sign In')
-							}}
+							onSignIn={() => router.replace('/sign-in')}
 						/>
 					)}
 
