@@ -1,196 +1,192 @@
-import { useState } from 'react'
 import {
-	KeyboardAvoidingView,
-	Platform,
-	ScrollView,
-	View,
-	Alert,
-} from 'react-native'
+  CodeFormValues,
+  SignUpFormValues,
+  codeSchema,
+  signUpSchema,
+} from "@/lib/schemas/auth";
+import { useAuth, useSignUp } from "@clerk/expo";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  View,
+} from "react-native";
 
-import SignUpForm from '@/components/auth/SignUpForm'
-import VerifyForm from '@/components/auth/VerifyForm'
-import SuccessScreen from '@/components/auth/SuccessScreen'
-import { useRouter } from 'expo-router'
-
-type Step = 'signup' | 'verify' | 'success'
+import SignUpForm from "@/components/auth/SignUpForm";
+import SuccessScreen from "@/components/auth/SuccessScreen";
+import VerifyForm from "@/components/auth/VerifyForm";
 
 export default function SignUpScreen() {
-	const [step, setStep] = useState<Step>('signup')
-	const router = useRouter()
-	const [loading, setLoading] = useState(false)
+  const { signUp, errors, fetchStatus } = useSignUp();
+  const { isSignedIn } = useAuth();
+  const router = useRouter();
 
-	const [firstName, setFirstName] = useState('')
-	const [lastName, setLastName] = useState('')
-	const [email, setEmail] = useState('')
-	const [password, setPassword] = useState('')
-	const [confirmPassword, setConfirmPassword] = useState('')
-	const [verificationCode, setVerificationCode] = useState('')
+  const isLoading = fetchStatus === "fetching";
 
-	const [errors, setErrors] = useState<Record<string, string>>({})
-	const [verifyError, setVerifyError] = useState('')
-	const [resendMessage, setResendMessage] = useState('')
+  const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [resendMessage, setResendMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
 
-	const validateSignUp = () => {
-		const newErrors: Record<string, string> = {}
+  const signUpForm = useForm<SignUpFormValues>({
+    resolver: zodResolver(signUpSchema),
+    mode: "all",
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
-		if (!firstName.trim()) {
-			newErrors.firstName = 'First name is required'
-		}
+  const codeForm = useForm<CodeFormValues>({
+    resolver: zodResolver(codeSchema),
+    mode: "all",
+    defaultValues: { code: "" },
+  });
 
-		if (!lastName.trim()) {
-			newErrors.lastName = 'Last name is required'
-		}
+  const handleSignUp = async (values: SignUpFormValues) => {
+    setEmail(values.email);
+    setFirstName(values.firstName);
 
-		if (!email.trim()) {
-			newErrors.email = 'Email is required'
-		} else if (!/\S+@\S+\.\S+/.test(email)) {
-			newErrors.email = 'Please enter a valid email'
-		}
+    const { error } = await signUp.password({
+      emailAddress: values.email,
+      password: values.password,
+      firstName: values.firstName,
+      lastName: values.lastName,
+    });
 
-		if (!password) {
-			newErrors.password = 'Password is required'
-		} else if (password.length < 8) {
-			newErrors.password = 'Password must contain at least 8 characters'
-		}
+    if (error) {
+      console.error(JSON.stringify(error, null, 2));
+      return;
+    }
 
-		if (!confirmPassword) {
-			newErrors.confirmPassword = 'Please confirm your password'
-		} else if (password !== confirmPassword) {
-			newErrors.confirmPassword = 'Passwords do not match'
-		}
+    if (!error) await signUp.verifications.sendEmailCode();
+  };
 
-		setErrors(newErrors)
+  const handleVerify = async ({ code }: CodeFormValues) => {
+    await signUp.verifications.verifyEmailCode({ code });
 
-		return Object.keys(newErrors).length === 0
-	}
+    const { error } = await signUp.finalize({
+      navigate: ({ session, decorateUrl }) => {
+        if (session?.currentTask) return;
+        const url = decorateUrl("/");
+        router.replace(url as any);
+      },
+    });
 
-	const handleSignUp = async () => {
-		if (!validateSignUp()) return
+    if (!error) {
+      setIsSuccess(true);
+    } else {
+      console.error("Sign-up finalize error:", error);
+    }
+  };
 
-		try {
-			setLoading(true)
+  const handleResend = async () => {
+    setResendMessage("");
+    try {
+      await signUp.verifications.sendEmailCode();
+      setResendMessage("A new verification code has been sent.");
+      setTimeout(() => setResendMessage(""), 4000);
+    } catch {
+      Alert.alert("Error", "Unable to resend verification code.");
+    }
+  };
 
-			// TODO:
-			// Clerk / Better Auth signup
-			// Send verification email
+  const handleStartOver = () => {
+    signUp.reset();
+    codeForm.reset();
+    signUpForm.reset();
+    setResendMessage("");
+  };
 
-			await new Promise((resolve) => setTimeout(resolve, 1200))
+  // Already signed in — nothing to render
+  if (isSignedIn) return null;
 
-			setStep('verify')
-		} finally {
-			setLoading(false)
-		}
-	}
+  // Verification step: email sent, waiting for code
+  if (
+    signUp.status === "missing_requirements" &&
+    signUp.unverifiedFields.includes("email_address") &&
+    signUp.missingFields.length === 0
+  ) {
+    return (
+      <KeyboardAvoidingView
+        className="flex-1 bg-brand-bg"
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View className="flex-1 justify-center px-6 py-10">
+            <VerifyForm
+              email={email}
+              control={codeForm.control}
+              error={codeForm.formState.errors.code?.message}
+              clerkError={errors.fields.code?.message}
+              message={resendMessage}
+              loading={isLoading}
+              onVerify={codeForm.handleSubmit(handleVerify)}
+              onResend={handleResend}
+              onBack={handleStartOver}
+            />
+          </View>
+          <View nativeID="clerk-captcha" />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    );
+  }
 
-	const handleVerify = async () => {
-		if (verificationCode.length !== 6) {
-			setVerifyError('Please enter the 6-digit verification code.')
-			return
-		}
+  // Success step: finalize navigated away, but show this as fallback
+  if (isSuccess) {
+    return (
+      <KeyboardAvoidingView
+        className="flex-1 bg-brand-bg"
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <View className="flex-1 justify-center px-6 py-10">
+          <SuccessScreen
+            firstName={firstName}
+            title="Welcome to Wallex!"
+            description="Your account has been created successfully. You're all set to start tracking your finances."
+            buttonText="Go to Dashboard"
+            onContinue={() => router.replace("/")}
+          />
+        </View>
+      </KeyboardAvoidingView>
+    );
+  }
 
-		try {
-			setLoading(true)
-			setVerifyError('')
-
-			// TODO:
-			// Verify email
-
-			await new Promise((resolve) => setTimeout(resolve, 1200))
-
-			setStep('success')
-		} finally {
-			setLoading(false)
-		}
-	}
-
-	const handleResend = async () => {
-		setResendMessage('')
-
-		try {
-			// TODO:
-			// resend verification email
-
-			await new Promise((resolve) => setTimeout(resolve, 1000))
-
-			setResendMessage('A new verification code has been sent.')
-
-			setTimeout(() => {
-				setResendMessage('')
-			}, 4000)
-		} catch {
-			Alert.alert('Error', 'Unable to resend verification code.')
-		}
-	}
-
-	const handleStartOver = () => {
-		setVerificationCode('')
-		setVerifyError('')
-		setErrors({})
-		setStep('signup')
-	}
-	const handleGoToDashboard = () => {
-		// TODO:
-		// router.replace('/(tabs)')
-		Alert.alert('Success', 'Navigate to dashboard')
-	}
-
-	return (
-		<KeyboardAvoidingView
-			className='flex-1 bg-brand-bg'
-			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-		>
-			<ScrollView
-				showsVerticalScrollIndicator={false}
-				contentContainerStyle={{
-					flexGrow: 1,
-				}}
-				keyboardShouldPersistTaps='handled'
-			>
-				<View className='flex-1 justify-center px-6 py-10'>
-					{step === 'signup' && (
-						<SignUpForm
-							firstName={firstName}
-							lastName={lastName}
-							email={email}
-							password={password}
-							confirmPassword={confirmPassword}
-							errors={errors}
-							loading={loading}
-							onFirstNameChange={setFirstName}
-							onLastNameChange={setLastName}
-							onEmailChange={setEmail}
-							onPasswordChange={setPassword}
-							onConfirmPasswordChange={setConfirmPassword}
-							onSubmit={handleSignUp}
-							onSignIn={() => router.replace('/sign-in')}
-						/>
-					)}
-
-					{step === 'verify' && (
-						<VerifyForm
-							email={email}
-							code={verificationCode}
-							error={verifyError}
-							message={resendMessage}
-							loading={loading}
-							onCodeChange={setVerificationCode}
-							onVerify={handleVerify}
-							onResend={handleResend}
-							onBack={handleStartOver}
-						/>
-					)}
-
-					{step === 'success' && (
-						<SuccessScreen
-							firstName={firstName}
-							title='Welcome to Wallex!'
-							description="Your account has been created successfully. You're all set to start tracking your finances."
-							buttonText='Go to Dashboard'
-							onContinue={handleGoToDashboard}
-						/>
-					)}
-				</View>
-			</ScrollView>
-		</KeyboardAvoidingView>
-	)
+  // Default: sign-up form
+  return (
+    <KeyboardAvoidingView
+      className="flex-1 bg-brand-bg"
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View className="flex-1 justify-center px-6 py-10">
+          <SignUpForm
+            control={signUpForm.control}
+            errors={signUpForm.formState.errors}
+            clerkErrors={errors.fields as any}
+            loading={isLoading}
+            onSubmit={signUpForm.handleSubmit(handleSignUp)}
+            onSignIn={() => router.replace("/sign-in")}
+          />
+        </View>
+        <View nativeID="clerk-captcha" />
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
 }

@@ -1,123 +1,96 @@
-import { useState } from 'react'
+import { SignInFormValues, signInSchema } from "@/lib/schemas/auth";
+import { useSignIn } from "@clerk/expo";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "expo-router";
+import { useForm } from "react-hook-form";
 import {
-	Alert,
-	KeyboardAvoidingView,
-	Platform,
-	ScrollView,
-	View,
-} from 'react-native'
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  View,
+} from "react-native";
 
-import SignInForm from '@/components/auth/SignInForm'
-import { useRouter } from 'expo-router'
+import SignInForm from "@/components/auth/SignInForm";
 
 export default function SignInScreen() {
-	const [email, setEmail] = useState('')
-	const [password, setPassword] = useState('')
-	const router = useRouter()
-	const [loading, setLoading] = useState(false)
-	const [googleLoading, setGoogleLoading] = useState(false)
+  const { signIn, errors, fetchStatus } = useSignIn();
+  const router = useRouter();
 
-	const [errors, setErrors] = useState<Record<string, string>>({})
+  const isLoading = fetchStatus === "fetching";
 
-	const validate = () => {
-		const newErrors: Record<string, string> = {}
+  const form = useForm<SignInFormValues>({
+    resolver: zodResolver(signInSchema),
+    mode: "all",
+    defaultValues: { email: "", password: "" },
+  });
 
-		if (!email.trim()) {
-			newErrors.email = 'Email address is required'
-		} else if (!/\S+@\S+\.\S+/.test(email)) {
-			newErrors.email = 'Please enter a valid email address'
-		}
+  const handleSignIn = async (values: SignInFormValues) => {
+    const { error } = await signIn.password({
+      emailAddress: values.email,
+      password: values.password,
+    });
 
-		if (!password) {
-			newErrors.password = 'Password is required'
-		}
+    if (error) {
+      console.error(JSON.stringify(error, null, 2));
+      return;
+    }
 
-		setErrors(newErrors)
+    if (signIn.status === "complete") {
+      await signIn.finalize({
+        navigate: ({ session, decorateUrl }) => {
+          if (session?.currentTask) return;
+          const url = decorateUrl("/");
+          router.replace(url as any);
+        },
+      });
+    } else if (signIn.status === "needs_second_factor") {
+      await signIn.mfa.sendPhoneCode();
+    } else if (signIn.status === "needs_client_trust") {
+      const emailCodeFactor = signIn.supportedSecondFactors.find(
+        (factor) => factor.strategy === "email_code",
+      );
+      if (emailCodeFactor) await signIn.mfa.sendEmailCode();
+    } else {
+      console.error("Sign-in attempt not complete:", signIn);
+    }
+  };
 
-		return Object.keys(newErrors).length === 0
-	}
+  const handleGoogleSignIn = async () => {
+    try {
+      Alert.alert("Google Sign In", "Google authentication coming soon.");
+    } catch {
+      Alert.alert("Error", "Unable to sign in with Google.");
+    }
+  };
 
-	const handleSignIn = async () => {
-		if (!validate()) return
+  const handleForgotPassword = () => {
+    Alert.alert("Forgot Password", "Navigate to forgot password screen.");
+  };
 
-		try {
-			setLoading(true)
-
-			/**
-			 * TODO:
-			 *
-			 * await signIn.create({
-			 *   identifier: email,
-			 *   password,
-			 * })
-			 */
-
-			await new Promise((resolve) => setTimeout(resolve, 1200))
-
-			Alert.alert('Success', 'Signed in successfully.')
-		} catch (error) {
-			Alert.alert('Sign In Failed', 'Invalid email or password.')
-		} finally {
-			setLoading(false)
-		}
-	}
-
-	const handleGoogleSignIn = async () => {
-		try {
-			setGoogleLoading(true)
-
-			/**
-			 * TODO:
-			 *
-			 * Clerk Google OAuth
-			 * Better Auth Google OAuth
-			 */
-
-			await new Promise((resolve) => setTimeout(resolve, 1500))
-
-			Alert.alert('Google Sign In', 'Google authentication coming soon.')
-		} catch {
-			Alert.alert('Error', 'Unable to sign in with Google.')
-		} finally {
-			setGoogleLoading(false)
-		}
-	}
-
-	const handleForgotPassword = () => {
-		Alert.alert('Forgot Password', 'Navigate to forgot password screen.')
-	}
-
-	const handleSignUp = () => {
-		router.replace('/sign-up')
-	}
-	return (
-		<KeyboardAvoidingView
-			className='flex-1 bg-brand-bg'
-			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-		>
-			<ScrollView
-				showsVerticalScrollIndicator={false}
-				keyboardShouldPersistTaps='handled'
-				contentContainerStyle={{
-					flexGrow: 1,
-				}}
-			>
-				<View className='flex-1 justify-center px-6 py-10'>
-					<SignInForm
-						email={email}
-						password={password}
-						errors={errors}
-						loading={loading}
-						googleLoading={googleLoading}
-						onEmailChange={setEmail}
-						onPasswordChange={setPassword}
-						onSubmit={handleSignIn}
-						onGoogleSignIn={handleGoogleSignIn}
-						onForgotPassword={handleForgotPassword}
-						onSignUp={handleSignUp}
-					/>
-				</View>
-			</ScrollView>
-		</KeyboardAvoidingView>
-	)
+  return (
+    <KeyboardAvoidingView
+      className="flex-1 bg-brand-bg"
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ flexGrow: 1 }}
+      >
+        <View className="flex-1 justify-center px-6 py-10">
+          <SignInForm
+            control={form.control}
+            errors={form.formState.errors}
+            clerkErrors={errors.fields}
+            loading={isLoading}
+            onSubmit={form.handleSubmit(handleSignIn)}
+            onGoogleSignIn={handleGoogleSignIn}
+            onForgotPassword={handleForgotPassword}
+            onSignUp={() => router.replace("/sign-up")}
+          />
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
 }

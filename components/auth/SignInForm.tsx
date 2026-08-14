@@ -1,108 +1,119 @@
-import React from 'react'
-import { Text, TouchableOpacity, View } from 'react-native'
+import { SignInFormValues } from "@/lib/schemas/auth";
+import React from "react";
+import { Control, Controller, FieldErrors } from "react-hook-form";
+import { Text, TouchableOpacity, View } from "react-native";
 
-import AuthHeader from './AuthHeader'
-import AuthInput from './AuthInput'
-import PasswordInput from './PasswordInput'
-import PrimaryButton from './PrimaryButton'
-import SocialButton from './SocialButton'
-import Divider from './Divider'
+import AuthHeader from "./AuthHeader";
+import AuthInput from "./AuthInput";
+import Divider from "./Divider";
+import PasswordInput from "./PasswordInput";
+import PrimaryButton from "./PrimaryButton";
+import SocialButton from "./SocialButton";
 
 interface SignInFormProps {
-	email: string
-	password: string
-
-	errors: Record<string, string>
-
-	loading?: boolean
-	googleLoading?: boolean
-
-	onEmailChange: (value: string) => void
-	onPasswordChange: (value: string) => void
-
-	onSubmit: () => void
-	onGoogleSignIn: () => void
-	onForgotPassword: () => void
-	onSignUp: () => void
+  control: Control<SignInFormValues>;
+  errors: FieldErrors<SignInFormValues>;
+  clerkErrors?: {
+    identifier?: { message: string } | null;
+    password?: { message: string } | null;
+  } | null;
+  loading?: boolean;
+  googleLoading?: boolean;
+  onSubmit: () => void;
+  onGoogleSignIn: () => void;
+  onForgotPassword: () => void;
+  onSignUp: () => void;
 }
 
 export default function SignInForm({
-	email,
-	password,
-	errors,
-	loading = false,
-	googleLoading = false,
-	onEmailChange,
-	onPasswordChange,
-	onSubmit,
-	onGoogleSignIn,
-	onForgotPassword,
-	onSignUp,
+  control,
+  errors,
+  clerkErrors,
+  loading = false,
+  googleLoading = false,
+  onSubmit,
+  onGoogleSignIn,
+  onForgotPassword,
+  onSignUp,
 }: SignInFormProps) {
-	return (
-		<>
-			<AuthHeader
-				title='Welcome Back'
-				subtitle='Sign in to continue managing your finances.'
-			/>
+  return (
+    <>
+      <AuthHeader
+        title="Welcome Back"
+        subtitle="Sign in to continue managing your finances."
+      />
 
-			<View className='bg-brand-surface border border-brand-surface-border rounded-3xl p-6'>
-				<AuthInput
-					label='Email Address'
-					placeholder='john@example.com'
-					value={email}
-					onChangeText={onEmailChange}
-					error={errors.email}
-					autoCapitalize='none'
-					autoComplete='email'
-					textContentType='emailAddress'
-					keyboardType='email-address'
-					returnKeyType='next'
-				/>
+      <View className="bg-brand-surface border border-brand-surface-border rounded-3xl p-6">
+        <Controller
+          control={control}
+          name="email"
+          render={({ field: { value, onChange, onBlur } }) => (
+            <AuthInput
+              label="Email Address"
+              placeholder="john@example.com"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              error={errors.email?.message ?? clerkErrors?.identifier?.message}
+              autoCapitalize="none"
+              autoComplete="email"
+              textContentType="emailAddress"
+              keyboardType="email-address"
+              returnKeyType="next"
+            />
+          )}
+        />
 
-				<PasswordInput
-					label='Password'
-					placeholder='Enter your password'
-					value={password}
-					onChangeText={onPasswordChange}
-					error={errors.password}
-					autoComplete='password'
-					textContentType='password'
-					returnKeyType='done'
-				/>
+        <Controller
+          control={control}
+          name="password"
+          render={({ field: { value, onChange, onBlur } }) => (
+            <PasswordInput
+              label="Password"
+              placeholder="Enter your password"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              error={errors.password?.message ?? clerkErrors?.password?.message}
+              autoComplete="password"
+              textContentType="password"
+              returnKeyType="done"
+            />
+          )}
+        />
 
-				<View className='items-end mb-5'>
-					<TouchableOpacity onPress={onForgotPassword} activeOpacity={0.7}>
-						<Text className='text-primary text-sm font-semibold'>
-							Forgot Password?
-						</Text>
-					</TouchableOpacity>
-				</View>
+        <View className="items-end mb-5">
+          <TouchableOpacity onPress={onForgotPassword} activeOpacity={0.7}>
+            <Text className="text-primary text-sm font-semibold">
+              Forgot Password?
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-				<PrimaryButton title='Sign In' loading={loading} onPress={onSubmit} />
+        <PrimaryButton title="Sign In" loading={loading} onPress={onSubmit} />
 
-				<View className='my-6'>
-					<Divider text='OR' />
-				</View>
+        <View className="my-6">
+          <Divider text="OR" />
+        </View>
 
-				<SocialButton
-					provider='google'
-					loading={googleLoading}
-					onPress={onGoogleSignIn}
-				/>
+        <SocialButton
+          provider="google"
+          loading={googleLoading}
+          onPress={onGoogleSignIn}
+        />
 
-				<View className='flex-row justify-center items-center mt-6'>
-					<Text className='text-brand-text-secondary text-sm'>
-						Don&apos;t have an account?
-					</Text>
+        <View className="flex-row justify-center items-center mt-6">
+          <Text className="text-brand-text-secondary text-sm">
+            Don&apos;t have an account?
+          </Text>
 
-					<TouchableOpacity onPress={onSignUp} activeOpacity={0.7}>
-						<Text className='ml-2 text-primary text-sm font-semibold'>
-							Sign Up
-						</Text>
-					</TouchableOpacity>
-				</View>
-			</View>
-		</>
-	)
+          <TouchableOpacity onPress={onSignUp} activeOpacity={0.7}>
+            <Text className="ml-2 text-primary text-sm font-semibold">
+              Sign Up
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </>
+  );
 }
