@@ -1,22 +1,22 @@
-import { CodeFormValues } from "@/lib/schemas/auth";
-import React from "react";
-import { Control, Controller } from "react-hook-form";
-import { Text, TouchableOpacity, View } from "react-native";
+import { CodeFormValues } from '@/lib/schemas/auth'
+import React from 'react'
+import { Control, Controller } from 'react-hook-form'
+import { Text, TouchableOpacity, View } from 'react-native'
 
-import AuthHeader from "./AuthHeader";
-import AuthInput from "./AuthInput";
-import PrimaryButton from "./PrimaryButton";
+import AuthHeader from './AuthHeader'
+import AuthInput from './AuthInput'
+import PrimaryButton from './PrimaryButton'
 
 interface VerifyFormProps {
-  email: string;
-  control: Control<CodeFormValues>;
-  error?: string;
-  clerkError?: string;
-  message?: string;
-  loading?: boolean;
-  onVerify: () => void;
-  onResend: () => void;
-  onBack: () => void;
+  email: string
+  control: Control<CodeFormValues>
+  error?: string
+  clerkError?: string
+  message?: string
+  loading?: boolean
+  onVerify: () => void
+  onResend: () => void
+  onBack: () => void
 }
 
 export default function VerifyForm({
@@ -37,7 +37,7 @@ export default function VerifyForm({
         subtitle={`We've sent a 6-digit verification code to ${email}`}
       />
 
-      <View className="bg-brand-surface border border-brand-surface-border rounded-3xl p-6">
+      <View className="rounded-3xl border border-brand-surface-border bg-brand-surface p-6">
         <Controller
           control={control}
           name="code"
@@ -46,7 +46,7 @@ export default function VerifyForm({
               label="Verification Code"
               placeholder="123456"
               value={value}
-              onChangeText={(text) => onChange(text.replace(/[^0-9]/g, ""))}
+              onChangeText={text => onChange(text.replace(/[^0-9]/g, ''))}
               onBlur={onBlur}
               maxLength={6}
               keyboardType="number-pad"
@@ -58,36 +58,22 @@ export default function VerifyForm({
           )}
         />
 
-        {message ? (
-          <Text className="text-primary text-sm text-center mb-4">
-            {message}
-          </Text>
-        ) : null}
+        {message ? <Text className="mb-4 text-center text-sm text-primary">{message}</Text> : null}
 
-        <PrimaryButton
-          title="Verify Account"
-          loading={loading}
-          onPress={onVerify}
-        />
+        <PrimaryButton title="Verify Account" loading={loading} onPress={onVerify} />
 
         <View className="mt-6 items-center">
           <TouchableOpacity onPress={onResend} activeOpacity={0.7}>
-            <Text className="text-primary font-semibold text-sm">
+            <Text className="text-sm font-semibold text-primary">
               Didn&apos;t receive the code? Resend
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={onBack}
-            activeOpacity={0.7}
-            className="mt-4"
-          >
-            <Text className="text-brand-text-secondary text-sm">
-              Start over
-            </Text>
+          <TouchableOpacity onPress={onBack} activeOpacity={0.7} className="mt-4">
+            <Text className="text-sm text-brand-text-secondary">Start over</Text>
           </TouchableOpacity>
         </View>
       </View>
     </>
-  );
+  )
 }

@@ -1,23 +1,23 @@
-import { SignUpFormValues } from "@/lib/schemas/auth";
-import React from "react";
-import { Control, Controller, FieldErrors } from "react-hook-form";
-import { Text, TouchableOpacity, View } from "react-native";
+import { SignUpFormValues } from '@/lib/schemas/auth'
+import React from 'react'
+import { Control, Controller, FieldErrors } from 'react-hook-form'
+import { Text, TouchableOpacity, View } from 'react-native'
 
-import AuthHeader from "./AuthHeader";
-import AuthInput from "./AuthInput";
-import PasswordInput from "./PasswordInput";
-import PrimaryButton from "./PrimaryButton";
+import AuthHeader from './AuthHeader'
+import AuthInput from './AuthInput'
+import PasswordInput from './PasswordInput'
+import PrimaryButton from './PrimaryButton'
 
 interface SignUpFormProps {
-  control: Control<SignUpFormValues>;
-  errors: FieldErrors<SignUpFormValues>;
+  control: Control<SignUpFormValues>
+  errors: FieldErrors<SignUpFormValues>
   clerkErrors?: {
-    emailAddress?: { message: string };
-    password?: { message: string };
-  };
-  loading?: boolean;
-  onSubmit: () => void;
-  onSignIn: () => void;
+    emailAddress?: { message: string }
+    password?: { message: string }
+  }
+  loading?: boolean
+  onSubmit: () => void
+  onSignIn: () => void
 }
 
 export default function SignUpForm({
@@ -36,7 +36,7 @@ export default function SignUpForm({
         showTagline
       />
 
-      <View className="bg-brand-surface border border-brand-surface-border rounded-3xl p-6">
+      <View className="rounded-3xl border border-brand-surface-border bg-brand-surface p-6">
         <View className="flex-row gap-4">
           <View className="flex-1">
             <Controller
@@ -87,9 +87,7 @@ export default function SignUpForm({
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
-              error={
-                errors.email?.message ?? clerkErrors?.emailAddress?.message
-              }
+              error={errors.email?.message ?? clerkErrors?.emailAddress?.message}
               autoCapitalize="none"
               keyboardType="email-address"
               autoComplete="email"
@@ -135,24 +133,16 @@ export default function SignUpForm({
           )}
         />
 
-        <PrimaryButton
-          title="Create Account"
-          loading={loading}
-          onPress={onSubmit}
-        />
+        <PrimaryButton title="Create Account" loading={loading} onPress={onSubmit} />
 
-        <View className="flex-row justify-center items-center mt-6">
-          <Text className="text-brand-text-secondary text-sm">
-            Already have an account?
-          </Text>
+        <View className="mt-6 flex-row items-center justify-center">
+          <Text className="text-sm text-brand-text-secondary">Already have an account?</Text>
 
           <TouchableOpacity onPress={onSignIn} activeOpacity={0.7}>
-            <Text className="ml-2 text-primary font-semibold text-sm">
-              Sign In
-            </Text>
+            <Text className="ml-2 text-sm font-semibold text-primary">Sign In</Text>
           </TouchableOpacity>
         </View>
       </View>
     </>
-  );
+  )
 }

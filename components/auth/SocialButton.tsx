@@ -1,53 +1,53 @@
-import React from "react";
+import React from 'react'
 import {
   ActivityIndicator,
   Text,
   TouchableOpacity,
   TouchableOpacityProps,
   View,
-} from "react-native";
-import { AntDesign } from "@expo/vector-icons";
+} from 'react-native'
+import { AntDesign } from '@expo/vector-icons'
 
-type Provider = "google" | "apple" | "github";
+type Provider = 'google' | 'apple' | 'github'
 
 interface SocialButtonProps extends TouchableOpacityProps {
-  provider?: Provider;
-  title?: string;
-  loading?: boolean;
+  provider?: Provider
+  title?: string
+  loading?: boolean
 }
 
 const providerConfig = {
   google: {
-    title: "Continue with Google",
-    icon: "google",
+    title: 'Continue with Google',
+    icon: 'google',
   },
   apple: {
-    title: "Continue with Apple",
-    icon: "apple1",
+    title: 'Continue with Apple',
+    icon: 'apple1',
   },
   github: {
-    title: "Continue with GitHub",
-    icon: "github",
+    title: 'Continue with GitHub',
+    icon: 'github',
   },
-} as const;
+} as const
 
 export default function SocialButton({
-  provider = "google",
+  provider = 'google',
   title,
   loading = false,
   disabled,
   ...props
 }: SocialButtonProps) {
-  const config = providerConfig[provider];
+  const config = providerConfig[provider]
 
-  const isDisabled = loading || disabled;
+  const isDisabled = loading || disabled
 
   return (
     <TouchableOpacity
       activeOpacity={0.85}
       disabled={isDisabled}
       className={`w-full rounded-2xl border border-brand-surface-border bg-brand-surface ${
-        isDisabled ? "opacity-60" : ""
+        isDisabled ? 'opacity-60' : ''
       }`}
       {...props}
     >
@@ -65,5 +65,5 @@ export default function SocialButton({
         )}
       </View>
     </TouchableOpacity>
-  );
+  )
 }

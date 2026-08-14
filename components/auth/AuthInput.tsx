@@ -1,10 +1,10 @@
-import React from "react";
-import { Text, TextInput, TextInputProps, View } from "react-native";
+import React from 'react'
+import { Text, TextInput, TextInputProps, View } from 'react-native'
 
 interface AuthInputProps extends TextInputProps {
-  label?: string;
-  error?: string;
-  leftIcon?: React.ReactNode;
+  label?: string
+  error?: string
+  leftIcon?: React.ReactNode
 }
 
 export default function AuthInput({
@@ -16,24 +16,10 @@ export default function AuthInput({
 }: AuthInputProps) {
   return (
     <View className="mb-5">
-      {label && (
-        <Text className="text-brand-text-primary text-sm font-semibold mb-2">
-          {label}
-        </Text>
-      )}
+      {label && <Text className="mb-2 text-sm font-semibold text-brand-text-primary">{label}</Text>}
 
       <View
-        className={`
-					flex-row
-					items-center
-					rounded-2xl
-					border
-					px-4
-					h-14
-					bg-brand-surface
-					${error ? "border-brand-coral" : "border-brand-surface-border"}
-					${!editable ? "opacity-60" : ""}
-				`}
+        className={`h-14 flex-row items-center rounded-2xl border bg-brand-surface px-4 ${error ? 'border-brand-coral' : 'border-brand-surface-border'} ${!editable ? 'opacity-60' : ''} `}
       >
         {leftIcon && <View className="mr-3">{leftIcon}</View>}
 
@@ -47,11 +33,7 @@ export default function AuthInput({
         />
       </View>
 
-      {error ? (
-        <Text className="text-brand-coral text-xs mt-2 font-medium">
-          {error}
-        </Text>
-      ) : null}
+      {error ? <Text className="mt-2 text-xs font-medium text-brand-coral">{error}</Text> : null}
     </View>
-  );
+  )
 }

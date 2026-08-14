@@ -1,28 +1,28 @@
-import { SignInFormValues } from "@/lib/schemas/auth";
-import React from "react";
-import { Control, Controller, FieldErrors } from "react-hook-form";
-import { Text, TouchableOpacity, View } from "react-native";
+import { SignInFormValues } from '@/lib/schemas/auth'
+import React from 'react'
+import { Control, Controller, FieldErrors } from 'react-hook-form'
+import { Text, TouchableOpacity, View } from 'react-native'
 
-import AuthHeader from "./AuthHeader";
-import AuthInput from "./AuthInput";
-import Divider from "./Divider";
-import PasswordInput from "./PasswordInput";
-import PrimaryButton from "./PrimaryButton";
-import SocialButton from "./SocialButton";
+import AuthHeader from './AuthHeader'
+import AuthInput from './AuthInput'
+import Divider from './Divider'
+import PasswordInput from './PasswordInput'
+import PrimaryButton from './PrimaryButton'
+import SocialButton from './SocialButton'
 
 interface SignInFormProps {
-  control: Control<SignInFormValues>;
-  errors: FieldErrors<SignInFormValues>;
+  control: Control<SignInFormValues>
+  errors: FieldErrors<SignInFormValues>
   clerkErrors?: {
-    identifier?: { message: string } | null;
-    password?: { message: string } | null;
-  } | null;
-  loading?: boolean;
-  googleLoading?: boolean;
-  onSubmit: () => void;
-  onGoogleSignIn: () => void;
-  onForgotPassword: () => void;
-  onSignUp: () => void;
+    identifier?: { message: string } | null
+    password?: { message: string } | null
+  } | null
+  loading?: boolean
+  googleLoading?: boolean
+  onSubmit: () => void
+  onGoogleSignIn: () => void
+  onForgotPassword: () => void
+  onSignUp: () => void
 }
 
 export default function SignInForm({
@@ -38,12 +38,9 @@ export default function SignInForm({
 }: SignInFormProps) {
   return (
     <>
-      <AuthHeader
-        title="Welcome Back"
-        subtitle="Sign in to continue managing your finances."
-      />
+      <AuthHeader title="Welcome Back" subtitle="Sign in to continue managing your finances." />
 
-      <View className="bg-brand-surface border border-brand-surface-border rounded-3xl p-6">
+      <View className="rounded-3xl border border-brand-surface-border bg-brand-surface p-6">
         <Controller
           control={control}
           name="email"
@@ -82,11 +79,9 @@ export default function SignInForm({
           )}
         />
 
-        <View className="items-end mb-5">
+        <View className="mb-5 items-end">
           <TouchableOpacity onPress={onForgotPassword} activeOpacity={0.7}>
-            <Text className="text-primary text-sm font-semibold">
-              Forgot Password?
-            </Text>
+            <Text className="text-sm font-semibold text-primary">Forgot Password?</Text>
           </TouchableOpacity>
         </View>
 
@@ -96,24 +91,16 @@ export default function SignInForm({
           <Divider text="OR" />
         </View>
 
-        <SocialButton
-          provider="google"
-          loading={googleLoading}
-          onPress={onGoogleSignIn}
-        />
+        <SocialButton provider="google" loading={googleLoading} onPress={onGoogleSignIn} />
 
-        <View className="flex-row justify-center items-center mt-6">
-          <Text className="text-brand-text-secondary text-sm">
-            Don&apos;t have an account?
-          </Text>
+        <View className="mt-6 flex-row items-center justify-center">
+          <Text className="text-sm text-brand-text-secondary">Don&apos;t have an account?</Text>
 
           <TouchableOpacity onPress={onSignUp} activeOpacity={0.7}>
-            <Text className="ml-2 text-primary text-sm font-semibold">
-              Sign Up
-            </Text>
+            <Text className="ml-2 text-sm font-semibold text-primary">Sign Up</Text>
           </TouchableOpacity>
         </View>
       </View>
     </>
-  );
+  )
 }

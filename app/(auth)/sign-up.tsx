@@ -1,123 +1,112 @@
-import {
-  CodeFormValues,
-  SignUpFormValues,
-  codeSchema,
-  signUpSchema,
-} from "@/lib/schemas/auth";
-import { useAuth, useSignUp } from "@clerk/expo";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "expo-router";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  View,
-} from "react-native";
+import { CodeFormValues, SignUpFormValues, codeSchema, signUpSchema } from '@/lib/schemas/auth'
+import { useAuth, useSignUp } from '@clerk/expo'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'expo-router'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native'
 
-import SignUpForm from "@/components/auth/SignUpForm";
-import SuccessScreen from "@/components/auth/SuccessScreen";
-import VerifyForm from "@/components/auth/VerifyForm";
+import SignUpForm from '@/components/auth/SignUpForm'
+import SuccessScreen from '@/components/auth/SuccessScreen'
+import VerifyForm from '@/components/auth/VerifyForm'
 
 export default function SignUpScreen() {
-  const { signUp, errors, fetchStatus } = useSignUp();
-  const { isSignedIn } = useAuth();
-  const router = useRouter();
+  const { signUp, errors, fetchStatus } = useSignUp()
+  const { isSignedIn } = useAuth()
+  const router = useRouter()
 
-  const isLoading = fetchStatus === "fetching";
+  const isLoading = fetchStatus === 'fetching'
 
-  const [email, setEmail] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [resendMessage, setResendMessage] = useState("");
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [email, setEmail] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [resendMessage, setResendMessage] = useState('')
+  const [isSuccess, setIsSuccess] = useState(false)
 
   const signUpForm = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
-    mode: "all",
+    mode: 'all',
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
     },
-  });
+  })
 
   const codeForm = useForm<CodeFormValues>({
     resolver: zodResolver(codeSchema),
-    mode: "all",
-    defaultValues: { code: "" },
-  });
+    mode: 'all',
+    defaultValues: { code: '' },
+  })
 
   const handleSignUp = async (values: SignUpFormValues) => {
-    setEmail(values.email);
-    setFirstName(values.firstName);
+    setEmail(values.email)
+    setFirstName(values.firstName)
 
     const { error } = await signUp.password({
       emailAddress: values.email,
       password: values.password,
       firstName: values.firstName,
       lastName: values.lastName,
-    });
+    })
 
     if (error) {
-      console.error(JSON.stringify(error, null, 2));
-      return;
+      console.error(JSON.stringify(error, null, 2))
+      return
     }
 
-    if (!error) await signUp.verifications.sendEmailCode();
-  };
+    if (!error) await signUp.verifications.sendEmailCode()
+  }
 
   const handleVerify = async ({ code }: CodeFormValues) => {
-    await signUp.verifications.verifyEmailCode({ code });
+    await signUp.verifications.verifyEmailCode({ code })
 
     const { error } = await signUp.finalize({
       navigate: ({ session, decorateUrl }) => {
-        if (session?.currentTask) return;
-        router.replace("/(root)/(tabs)");
+        if (session?.currentTask) return
+        router.replace('/(root)/(tabs)')
       },
-    });
+    })
 
     if (!error) {
-      setIsSuccess(true);
+      setIsSuccess(true)
     } else {
-      console.error("Sign-up finalize error:", error);
+      console.error('Sign-up finalize error:', error)
     }
-  };
+  }
 
   const handleResend = async () => {
-    setResendMessage("");
+    setResendMessage('')
     try {
-      await signUp.verifications.sendEmailCode();
-      setResendMessage("A new verification code has been sent.");
-      setTimeout(() => setResendMessage(""), 4000);
+      await signUp.verifications.sendEmailCode()
+      setResendMessage('A new verification code has been sent.')
+      setTimeout(() => setResendMessage(''), 4000)
     } catch {
-      Alert.alert("Error", "Unable to resend verification code.");
+      Alert.alert('Error', 'Unable to resend verification code.')
     }
-  };
+  }
 
   const handleStartOver = () => {
-    signUp.reset();
-    codeForm.reset();
-    signUpForm.reset();
-    setResendMessage("");
-  };
+    signUp.reset()
+    codeForm.reset()
+    signUpForm.reset()
+    setResendMessage('')
+  }
 
   // Already signed in — nothing to render
-  if (isSignedIn) return null;
+  if (isSignedIn) return null
 
   // Verification step: email sent, waiting for code
   if (
-    signUp.status === "missing_requirements" &&
-    signUp.unverifiedFields.includes("email_address") &&
+    signUp.status === 'missing_requirements' &&
+    signUp.unverifiedFields.includes('email_address') &&
     signUp.missingFields.length === 0
   ) {
     return (
       <KeyboardAvoidingView
         className="flex-1 bg-brand-bg"
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -140,7 +129,7 @@ export default function SignUpScreen() {
           <View nativeID="clerk-captcha" />
         </ScrollView>
       </KeyboardAvoidingView>
-    );
+    )
   }
 
   // Success step: finalize navigated away, but show this as fallback
@@ -148,7 +137,7 @@ export default function SignUpScreen() {
     return (
       <KeyboardAvoidingView
         className="flex-1 bg-brand-bg"
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <View className="flex-1 justify-center px-6 py-10">
           <SuccessScreen
@@ -156,18 +145,18 @@ export default function SignUpScreen() {
             title="Welcome to Wallex!"
             description="Your account has been created successfully. You're all set to start tracking your finances."
             buttonText="Go to Dashboard"
-            onContinue={() => router.replace("/")}
+            onContinue={() => router.replace('/')}
           />
         </View>
       </KeyboardAvoidingView>
-    );
+    )
   }
 
   // Default: sign-up form
   return (
     <KeyboardAvoidingView
       className="flex-1 bg-brand-bg"
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -181,11 +170,11 @@ export default function SignUpScreen() {
             clerkErrors={errors.fields as any}
             loading={isLoading}
             onSubmit={signUpForm.handleSubmit(handleSignUp)}
-            onSignIn={() => router.replace("/sign-in")}
+            onSignIn={() => router.replace('/sign-in')}
           />
         </View>
         <View nativeID="clerk-captcha" />
       </ScrollView>
     </KeyboardAvoidingView>
-  );
+  )
 }
