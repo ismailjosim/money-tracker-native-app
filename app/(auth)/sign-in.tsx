@@ -40,8 +40,7 @@ export default function SignInScreen() {
       await signIn.finalize({
         navigate: ({ session, decorateUrl }) => {
           if (session?.currentTask) return;
-          const url = decorateUrl("/");
-          router.replace(url as any);
+          router.replace("/(root)/(tabs)");
         },
       });
     } else if (signIn.status === "needs_second_factor") {
@@ -82,7 +81,7 @@ export default function SignInScreen() {
           <SignInForm
             control={form.control}
             errors={form.formState.errors}
-            clerkErrors={errors.fields}
+            clerkErrors={errors.fields as any}
             loading={isLoading}
             onSubmit={form.handleSubmit(handleSignIn)}
             onGoogleSignIn={handleGoogleSignIn}

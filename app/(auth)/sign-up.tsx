@@ -76,8 +76,7 @@ export default function SignUpScreen() {
     const { error } = await signUp.finalize({
       navigate: ({ session, decorateUrl }) => {
         if (session?.currentTask) return;
-        const url = decorateUrl("/");
-        router.replace(url as any);
+        router.replace("/(root)/(tabs)");
       },
     });
 
