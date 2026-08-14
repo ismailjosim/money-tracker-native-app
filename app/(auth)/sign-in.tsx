@@ -20,15 +20,15 @@ export default function SignInScreen() {
   })
 
   const handleSignIn = async (values: SignInFormValues) => {
-    const { error } = await signIn.password({
+    const result = await signIn.password({
       emailAddress: values.email,
       password: values.password,
     })
-
-    if (error) {
-      console.error(JSON.stringify(error, null, 2))
-      return
-    }
+    console.log({ result })
+    // if (error) {
+    //   console.error(JSON.stringify(error, null, 2))
+    //   return
+    // }
 
     if (signIn.status === 'complete') {
       await signIn.finalize({
