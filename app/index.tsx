@@ -1,22 +1,12 @@
-import { useAuth } from '@clerk/expo'
-import { Redirect } from 'expo-router'
-import { ActivityIndicator, View } from 'react-native'
+import { View, Text } from 'react-native'
+import '../global.css'
 
-const MainScreen = () => {
-  const { isLoaded, isSignedIn } = useAuth()
-
-  if (!isLoaded) {
-    return (
-      <View className="flex-1 items-center justify-center bg-brand-body">
-        <ActivityIndicator size="large" color="#253BCE" />
-      </View>
-    )
-  }
-
-  if (isSignedIn) {
-    return <Redirect href={'/(root)/(tabs)'} />
-  }
-  return <Redirect href={'/sign-in'} />
+const HomeScreen = () => {
+  return (
+    <View>
+      <Text className="bg-red-500 px-2 py-3 text-center text-3xl">HomeScreen</Text>
+    </View>
+  )
 }
 
-export default MainScreen
+export default HomeScreen
