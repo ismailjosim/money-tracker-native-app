@@ -42,7 +42,6 @@ export default function SignUpScreen() {
 
   const handleSignUp = async (values: SignUpFormValues) => {
     setEmail(values.email)
-    setFirstName(values.firstName)
 
     const { error } = await signUp.password({
       emailAddress: values.email,
