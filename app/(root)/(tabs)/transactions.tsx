@@ -1,9 +1,11 @@
-import { Text, View } from 'react-native'
+import { View, Text } from 'react-native'
 
-export default function Transactions() {
+const Transactions = () => {
   return (
     <View>
-      <Text>Show all Transactions</Text>
+      <Text>transactions</Text>
     </View>
   )
 }
+
+export default Transactions

@@ -10,23 +10,16 @@ export default function TabLayout() {
     return (
       <NativeTabs
         backgroundColor="#0B0E14"
-        tintColor="#253BCE"
-        iconColor={{
-          default: '#5C5F68',
-          selected: '#253BCE',
-        }}
+        tintColor="#4A9EFF"
+        iconColor={{ default: '#5C5F68', selected: '#4A9EFF' }}
         labelStyle={{
-          default: {
-            color: '#5C5F68',
-          },
-          selected: {
-            color: '#253BCE',
-          },
+          default: { color: '#5C5F68' },
+          selected: { color: '#4A9EFF' },
         }}
       >
         <NativeTabs.Trigger name="index">
-          <Icon sf="house.fill" />
           <Label>Home</Label>
+          <Icon sf="house.fill" />
         </NativeTabs.Trigger>
 
         <NativeTabs.Trigger name="transactions">
@@ -52,18 +45,16 @@ export default function TabLayout() {
     )
   }
 
-  // Android / Expo Go fallback
+  // Android / Expo Go fallback — standard JS-based tab bar
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-
-        tabBarActiveTintColor: '#253BCE',
+        tabBarActiveTintColor: '#4A9EFF',
         tabBarInactiveTintColor: '#5C5F68',
-
         tabBarStyle: {
-          backgroundColor: '#0F1115',
-          borderTopColor: '#232838',
+          backgroundColor: '#FFFFFF',
+          borderTopColor: '#E8E6DF',
           paddingTop: 4,
           height: 70,
         },
@@ -76,7 +67,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => <Feather name="home" size={size} color={color} />,
         }}
       />
-
       <Tabs.Screen
         name="transactions"
         options={{
@@ -84,7 +74,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => <Feather name="list" size={size} color={color} />,
         }}
       />
-
       <Tabs.Screen
         name="add-transaction"
         options={{
@@ -92,7 +81,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => <Feather name="plus-circle" size={size} color={color} />,
         }}
       />
-
       <Tabs.Screen
         name="assistant"
         options={{
@@ -100,7 +88,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => <Feather name="cpu" size={size} color={color} />,
         }}
       />
-
       <Tabs.Screen
         name="profile"
         options={{

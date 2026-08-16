@@ -1,9 +1,11 @@
-import { Text, View } from 'react-native'
+import { View, Text } from 'react-native'
 
-export default function Assistant() {
+const Assistant = () => {
   return (
     <View>
-      <Text>Assistant</Text>
+      <Text>assistant</Text>
     </View>
   )
 }
+
+export default Assistant

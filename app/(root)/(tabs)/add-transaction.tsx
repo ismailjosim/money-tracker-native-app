@@ -1,9 +1,11 @@
-import { Text, View } from 'react-native'
+import { View, Text } from 'react-native'
 
-export default function AddTransaction() {
+const AddTransaction = () => {
   return (
     <View>
-      <Text>Add Transaction</Text>
+      <Text>AddTransaction</Text>
     </View>
   )
 }
+
+export default AddTransaction

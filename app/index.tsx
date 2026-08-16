@@ -1,12 +1,12 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { useAuth } from '@clerk/expo'
+import { Redirect } from 'expo-router'
 
-const MainScreen = () => {
-  return (
-    <View>
-      <Text>MainScreen</Text>
-    </View>
-  )
+export default function Index() {
+  const { isSignedIn, isLoaded } = useAuth()
+
+  if (!isLoaded) return null
+
+  if (isSignedIn) return <Redirect href="/(root)/(tabs)" />
+
+  return <Redirect href="/sign-in" />
 }
-
-export default MainScreen
