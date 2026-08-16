@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
-import '../global.css'
+import React from 'react'
 
-const HomeScreen = () => {
+const MainScreen = () => {
   return (
     <View>
-      <Text className="bg-red-500 px-2 py-3 text-center text-3xl">HomeScreen</Text>
+      <Text>MainScreen</Text>
     </View>
   )
 }
 
-export default HomeScreen
+export default MainScreen
