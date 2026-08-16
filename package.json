@@ -1,13 +1,14 @@
 {
-  "name": "wallex-native",
-  "main": "expo-router/entry",
+  "name": "wallex",
   "version": "1.0.0",
+  "main": "expo-router/entry",
+  "private": true,
   "scripts": {
     "start": "expo start",
-    "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "reset-project": "node ./scripts/reset-project.js",
     "lint": "expo lint",
     "lint:fix": "expo lint --fix",
     "format": "prettier . --write",
@@ -24,7 +25,7 @@
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
-    "babel-preset-expo": "~54.0.12",
+    "@supabase/supabase-js": "^2.112.3",
     "expo": "~54.0.35",
     "expo-constants": "~18.0.13",
     "expo-font": "~14.0.12",
@@ -60,7 +61,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
     "husky": "^9.1.7",
-    "lint-staged": "^17.3.0",
+    "lint-staged": "^15.2.10",
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.5.14",
     "tailwindcss": "^3.4.19",
@@ -71,6 +72,5 @@
       "eslint --fix",
       "prettier --write"
     ]
-  },
-  "private": true
+  }
 }

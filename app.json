@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Wallex-native",
-    "slug": "Wallex-native",
+    "name": "Wallex",
+    "slug": "wallex",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/wallex-appicon.png",
-    "scheme": "wallexnative",
+    "scheme": "wallex",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
