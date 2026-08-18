@@ -26,13 +26,8 @@ export const useUserSync = () => {
           return
         }
 
-        if (existingUser) {
-          setCurrency(existingUser.currency ?? 'BDT')
-          setNeedOnboarding(!existingUser.currency)
-        }
-
         const email = user.emailAddresses[0].emailAddress
-        const { data: newUser, error: inertError } = await authSupabase
+        const { data: newUser, error: insertError } = await authSupabase
           .from('users')
           .upsert(
             {
@@ -49,25 +44,28 @@ export const useUserSync = () => {
           .select('currency')
           .single()
 
-        if (inertError) {
-          console.error('Error upserting user:', inertError)
+        if (insertError) {
+          console.error('Error upserting user:', insertError)
           setNeedOnboarding(true)
           return
         }
         setCurrency(newUser?.currency ?? 'BDT')
         setNeedOnboarding(!newUser?.currency)
-        // create a default account for user
-        const { error: accountError } = await authSupabase.from('accounts').insert({
-          user_id: user.id,
-          name: 'cash',
-          type: 'CASH',
-          balance: 0,
-          is_default: true,
-        })
 
-        if (accountError) {
-          console.error('Error creating account:', accountError)
-          return
+        if (!existingUser) {
+          // create a default account for user
+          const { error: accountError } = await authSupabase.from('accounts').insert({
+            user_id: user.id,
+            name: 'cash',
+            type: 'CASH',
+            balance: 0,
+            is_default: true,
+          })
+
+          if (accountError) {
+            console.error('Error creating account:', accountError)
+            return
+          }
         }
       } catch (err) {
         console.error('Failed to sync user:', err)
