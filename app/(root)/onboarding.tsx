@@ -37,7 +37,9 @@ export default function OnboardingScreen() {
   })
 
   const [selectedCurrency, setSelectedCurrency] = useState(
-    ALL_CURRENCIES.find(c => c.code === 'BDT') ?? ALL_CURRENCIES[0]
+    ALL_CURRENCIES.find(c => c.code === 'BDT') ??
+      ALL_CURRENCIES[0] ??
+      ({ code: 'USD', name: 'US Dollar', symbol: '$' } as (typeof ALL_CURRENCIES)[0])
   )
   const [pickerOpen, setPickerOpen] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -191,7 +193,7 @@ export default function OnboardingScreen() {
       <CurrencyPicker
         visible={pickerOpen}
         selectedCode={selectedCurrency.code}
-        onSelect={(currency: any) => {
+        onSelect={currency => {
           setSelectedCurrency(currency)
           setPickerOpen(false)
         }}
