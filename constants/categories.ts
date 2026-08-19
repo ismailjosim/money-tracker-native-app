@@ -143,7 +143,7 @@ export const INCOME_CATEGORIES = Object.entries(CATEGORIES)
   .map(([k, v]) => ({ key: k as CategoryKey, ...v }))
 
 // single lookup by key - use this everywhere instead of CATEGORIES[key]
-export const getCategoryConfig = (key: CategoryKey) => CATEGORIES[key]
+export const getCategoryConfig = (key: CategoryKey) => CATEGORIES[key] ?? CATEGORIES.other
 
 // used in Gemini prompts - gives the model the full list of valid keys
 export const CATEGORY_KEYS_EXPENSE = EXPENSE_CATEGORIES.map(c => c.key)
