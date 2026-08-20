@@ -6,18 +6,24 @@ import { useUserStore } from '@/store/useStore'
 import { Transaction } from '@/types'
 import { useUser } from '@clerk/expo'
 import { isSameMonth } from 'date-fns'
-
 import { useRouter } from 'expo-router'
-import React, { useMemo, useState } from 'react'
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native'
+import { useMemo, useState } from 'react'
+import {
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import { Image } from 'expo-image'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Feather } from '@expo/vector-icons'
 import { formatPrice } from '@/lib/utils/utils'
-import { RefreshControl, ScrollView } from 'react-native-gesture-handler'
 import { PieChart } from 'react-native-gifted-charts'
 import { TransactionRow } from '@/components/Shared/TransactionRow'
 import { BudgetModal } from '@/components/Shared/BudgetModal'
+
 const QUICK_ACTIONS = [
   {
     icon: 'camera',
@@ -263,6 +269,7 @@ const HomeScreen = () => {
               </Text>
             )}
           </TouchableOpacity>
+
           {/* Expense breakdown section */}
           {expenseBreakdown.length > 0 && (
             <View className="mb-[18px] rounded-[18px] border border-[#E8E6DF] bg-white p-4">
