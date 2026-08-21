@@ -3,6 +3,7 @@ import type { ExtractedTransaction } from '@/types/transaction'
 
 export type { ExtractedTransaction } from '@/types/transaction'
 
+// const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent'
 const GEMINI_URL =
   'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent'
 
@@ -78,7 +79,7 @@ export async function extractTransactionFromVoice(
   mimeType: string
 ): Promise<ExtractedTransaction> {
   const today = new Date().toISOString().slice(0, 10)
-  const prompt = `You are transcribing a short voice note for a personal finance app where the user is logging a transaction (e.g. "I spent 400 on groceries yesterday" or "Got 5000 rupees freelance payment today"). Today's date is ${today}. Extract the transaction details.
+  const prompt = `You are transcribing a short voice note for a personal finance app where the user is logging a transaction (e.g. "I spent 400 on groceries yesterday" or "Got 5000 taka from freelance work today"). Today's date is ${today}. Extract the transaction details.
 
 - "type" is "EXPENSE" or "INCOME" based on what the user said.
 - "amount" is the amount mentioned (a plain number, no currency symbols).
