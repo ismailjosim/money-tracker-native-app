@@ -68,12 +68,12 @@ Recent transactions:
 ${txLines || 'No transactions recorded.'}`
 }
 
-export async function askAssistant(
+export const askAssistant = async (
   question: string,
   transactions: Transaction[],
   budget: Budget | null,
   currency: string
-) {
+) => {
   const apiKey = process.env.EXPO_PUBLIC_GEMINI_API_KEY
   if (!apiKey) throw new Error('Missing EXPO_PUBLIC_GEMINI_API_KEY')
 
