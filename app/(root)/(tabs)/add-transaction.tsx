@@ -1,22 +1,4 @@
-import { AIActionCard } from '@/components/AddTransaction/AIActionCard'
-import { CalendarPicker } from '@/components/AddTransaction/CalendarPicker'
-import { PillGroup } from '@/components/AddTransaction/PillGroup'
-import { ReceiptScannerModal } from '@/components/AddTransaction/ReceiptScannerModal'
-import { VoiceRecorderModal } from '@/components/AddTransaction/VoiceRecorderModal'
-import { CategoryKey, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '@/constants/categories'
-import { AI_GRADIENT, AI_GRADIENT_REVERSE } from '@/constants/theme'
-import { useCreateTransaction } from '@/hooks/mutations/useTransactionMutations'
-import { useAccountsQuery } from '@/hooks/queries/useAccountsQuery'
-import { TransactionFormValues, transactionSchema } from '@/lib/schemas/transaction'
-import { extractTransactionFromReceipt } from '@/lib/services/extractTransaction'
-import { Account, ExtractedTransaction, InputMethod } from '@/types'
-import { useUser } from '@clerk/expo'
-import { Feather } from '@expo/vector-icons'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { format, isValid } from 'date-fns'
-import { useLocalSearchParams, useRouter } from 'expo-router'
 import React, { useEffect, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
 import {
   View,
   Text,
@@ -29,6 +11,28 @@ import {
   TextInput,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useUser } from '@clerk/expo'
+import { Controller, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { format, isValid } from 'date-fns'
+import { LinearGradient } from 'expo-linear-gradient'
+import * as Haptics from 'expo-haptics'
+import { Calendar as CalendarIcon, AlertCircle, FileText, CheckCircle2 } from 'lucide-react-native'
+
+import { AIActionCard } from '@/components/AddTransaction/AIActionCard'
+import { CalendarPicker } from '@/components/AddTransaction/CalendarPicker'
+import { PillGroup } from '@/components/AddTransaction/PillGroup'
+import { ReceiptScannerModal } from '@/components/AddTransaction/ReceiptScannerModal'
+import { VoiceRecorderModal } from '@/components/AddTransaction/VoiceRecorderModal'
+import { CategoryKey, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '@/constants/categories'
+import { AI_GRADIENT, AI_GRADIENT_REVERSE } from '@/constants/theme'
+import { useCreateTransaction } from '@/hooks/mutations/useTransactionMutations'
+import { useAccountsQuery } from '@/hooks/queries/useAccountsQuery'
+import { useUserStore } from '@/store/useStore'
+import { TransactionFormValues, transactionSchema } from '@/lib/schemas/transaction'
+import { extractTransactionFromReceipt } from '@/lib/services/extractTransaction'
+import { Account, ExtractedTransaction, InputMethod } from '@/types'
 
 const TYPE_OPTIONS = [
   { key: 'EXPENSE' as const, label: 'Expense' },
@@ -44,10 +48,11 @@ const DEFAULT_VALUES = (accounts: Account[]): TransactionFormValues => ({
   date: new Date(),
 })
 
-const AddTransaction = () => {
+export default function AddTransactionScreen() {
   const { user } = useUser()
   const router = useRouter()
   const params = useLocalSearchParams<{ action?: string }>()
+  const currency = useUserStore(s => s.currency)
 
   const {
     data: accounts = [],
@@ -88,6 +93,11 @@ const AddTransaction = () => {
     if (accounts.length > 0) resetForm(DEFAULT_VALUES(accounts))
   }, [accounts, resetForm])
 
+  useEffect(() => {
+    if (params.action === 'scan') setScannerOpen(true)
+    if (params.action === 'voice') setVoiceModalOpen(true)
+  }, [params.action])
+
   const applyExtraction = (result: ExtractedTransaction) => {
     const categoryList = result.type === 'INCOME' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES
     const isValidCategory = (key: CategoryKey | null): key is CategoryKey =>
@@ -119,6 +129,7 @@ const AddTransaction = () => {
   const onSubmit = async (values: TransactionFormValues) => {
     if (!user) return
 
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {})
     setError('')
 
     const parsed = parseFloat(values.amount.replace(/,/g, ''))
@@ -140,6 +151,7 @@ const AddTransaction = () => {
       return
     }
 
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {})
     resetForm(DEFAULT_VALUES(accounts))
     setInputMethod('MANUAL')
     setVoiceTranscript(null)
@@ -172,44 +184,38 @@ const AddTransaction = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-brand-body" edges={['top']}>
-      {/* Header   */}
-      <View className="px-5 pb-2 pt-3">
-        <Text className="text-xl font-semibold text-brand-bg">Add transaction</Text>
+    <SafeAreaView className="flex-1 bg-[#08090D]" edges={['top']}>
+      {/* Top Header */}
+      <View className="px-5 pb-3 pt-2.5">
+        <Text className="text-xl font-black tracking-tight text-white">New Transaction</Text>
       </View>
 
-      {/* Keyboard Avoiding View */}
-
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        // keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         className="flex-1"
       >
         {loadingAccounts ? (
-          <View className="flex-1 items-center justify-center">
-            <ActivityIndicator color="#4A9EFF" />
+          <View className="flex-1 items-center justify-center px-6">
+            <ActivityIndicator color="#00E599" size="large" />
           </View>
         ) : accountsError ? (
-          <View className="flex-1 items-center justify-center px-10">
-            <Feather name="alert-circle" size={32} color="#FF6B4A" />
-            <Text className="mt-3 text-center text-sm text-brand-text-muted">
+          <View className="flex-1 items-center justify-center px-6">
+            <AlertCircle size={36} color="#FF4D6D" />
+            <Text className="mt-2.5 text-center text-sm font-semibold text-[#FF4D6D]">
               Couldn&apos;t load your accounts.
             </Text>
           </View>
         ) : accounts.length === 0 ? (
-          <View className="flex-1 items-center justify-center px-10">
-            <Feather name="alert-circle" size={32} color="#FF6B4A" />
-            <Text className="mt-3 text-center text-sm text-brand-text-muted">
-              You need an account before adding a transaction.
+          <View className="flex-1 items-center justify-center px-6">
+            <AlertCircle size={36} color="#FF4D6D" />
+            <Text className="mt-2.5 text-center text-sm font-semibold text-[#FF4D6D]">
+              You need an account before creating a transaction.
             </Text>
           </View>
         ) : (
           <ScrollView
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{
-              paddingHorizontal: 20,
-              paddingBottom: 100,
-            }}
+            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 110 }}
           >
             {/* AI Capture shortcuts */}
             <View className="mb-4 flex-row gap-2.5">
@@ -229,61 +235,73 @@ const AddTransaction = () => {
               />
             </View>
 
-            {/* type toggle */}
-            <View className="mb-4 flex-row rounded-xl border border-[#E8E6DF] bg-white p-1">
-              {TYPE_OPTIONS.map(t => (
-                <TouchableOpacity
-                  key={t.key}
-                  onPress={() => {
-                    setValue('type', t.key)
-                    setValue(
-                      'category',
-                      t.key === 'INCOME' ? INCOME_CATEGORIES[0].key : EXPENSE_CATEGORIES[0].key
-                    )
-                  }}
-                  className={`flex-1 items-center rounded-lg py-2 ${
-                    type === t.key ? 'bg-brand-bg' : ''
-                  }`}
-                >
-                  <Text
-                    className={`text-xs font-medium ${
-                      type === t.key ? 'text-white' : 'text-brand-text-secondary'
+            {/* Type Toggle (Segmented Pill) */}
+            <View className="mb-4 flex-row rounded-2xl border border-white/10 bg-[#111420] p-1">
+              {TYPE_OPTIONS.map(t => {
+                const isSelected = type === t.key
+                return (
+                  <TouchableOpacity
+                    key={t.key}
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
+                      setValue('type', t.key)
+                      setValue(
+                        'category',
+                        t.key === 'INCOME' ? INCOME_CATEGORIES[0].key : EXPENSE_CATEGORIES[0].key
+                      )
+                    }}
+                    activeOpacity={0.8}
+                    className={`flex-1 items-center justify-center rounded-xl py-2.5 ${
+                      isSelected ? (t.key === 'INCOME' ? 'bg-[#00E599]' : 'bg-[#FF4D6D]') : ''
                     }`}
                   >
-                    {t.label}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+                    <Text
+                      className={`text-xs font-semibold ${
+                        isSelected ? 'font-bold text-[#08090D]' : 'text-slate-400'
+                      }`}
+                    >
+                      {t.label}
+                    </Text>
+                  </TouchableOpacity>
+                )
+              })}
             </View>
 
-            {/* Amount */}
-            <Text className="mb-1.5 text-xs font-medium text-brand-bg">Amount</Text>
-            <Controller
-              control={control}
-              name="amount"
-              render={({ field: { value, onChange, onBlur } }) => (
-                <TextInput
-                  value={value}
-                  onChangeText={v => {
-                    setError('')
-                    onChange(v)
-                  }}
-                  onBlur={onBlur}
-                  placeholder="0"
-                  placeholderTextColor="#8A8D96"
-                  keyboardType="numeric"
-                  className="rounded-xl border border-[#E8E6DF] bg-white px-4 py-3.5 text-sm text-brand-bg"
-                />
+            {/* Big Hero Amount Input */}
+            <View className="mb-4 items-center rounded-3xl border border-white/10 bg-[#111420] p-5 shadow-xl">
+              <Text className="mb-2 text-[11px] font-bold tracking-wider text-slate-400">
+                AMOUNT ({currency})
+              </Text>
+              <Controller
+                control={control}
+                name="amount"
+                render={({ field: { value, onChange, onBlur } }) => (
+                  <TextInput
+                    value={value}
+                    onChangeText={v => {
+                      setError('')
+                      onChange(v)
+                    }}
+                    onBlur={onBlur}
+                    placeholder="0.00"
+                    placeholderTextColor="#475569"
+                    keyboardType="numeric"
+                    className={`p-0 text-4xl font-black tracking-tight ${
+                      type === 'INCOME' ? 'text-[#00E599]' : 'text-[#FF4D6D]'
+                    }`}
+                  />
+                )}
+              />
+              {errors.amount && (
+                <Text className="mt-1.5 text-xs text-[#FF4D6D]">{errors.amount.message}</Text>
               )}
-            />
-            {errors.amount && (
-              <Text className="mt-1.5 text-xs text-brand-coral">{errors.amount.message}</Text>
-            )}
-            <View className="mb-4" />
+            </View>
 
-            {/* Category */}
-            <Text className="mb-1.5 text-xs font-medium text-brand-bg">Category</Text>
+            {/* Category Selector */}
             <View className="mb-4">
+              <Text className="mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                Category
+              </Text>
               <PillGroup
                 options={categories.map(c => ({
                   key: c.key,
@@ -295,83 +313,122 @@ const AddTransaction = () => {
               />
             </View>
 
-            {/* Account */}
-            <Text className="mb-1.5 text-xs font-medium text-brand-bg">Account</Text>
-            <View className="mb-1">
+            {/* Account Selector */}
+            <View className="mb-4">
+              <Text className="mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                Account
+              </Text>
               <PillGroup
                 options={accounts.map(a => ({ key: a.id, label: a.name }))}
                 value={accountId}
                 onChange={key => setValue('accountId', key)}
               />
+              {errors.accountId && (
+                <Text className="mt-1.5 text-xs text-[#FF4D6D]">{errors.accountId.message}</Text>
+              )}
             </View>
-            {errors.accountId && (
-              <Text className="mb-3 text-xs text-brand-coral">{errors.accountId.message}</Text>
-            )}
-            <View className="mb-3" />
 
-            {/* Date */}
-            <Text className="mb-1.5 text-xs font-medium text-brand-bg">Date</Text>
-            <TouchableOpacity
-              onPress={() => setDatePickerOpen(v => !v)}
-              className="mb-1 flex-row items-center justify-between rounded-xl border border-[#E8E6DF] bg-white px-4 py-3.5"
-            >
-              <Text className="text-sm text-brand-bg">{format(date, 'd MMM yyyy')}</Text>
-              <Feather name="calendar" size={16} color="#5C5F68" />
-            </TouchableOpacity>
+            {/* Date Selector */}
+            <View className="mb-4">
+              <Text className="mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                Date
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
+                  setDatePickerOpen(v => !v)
+                }}
+                activeOpacity={0.8}
+                className="flex-row items-center justify-between rounded-2xl border border-white/10 bg-[#111420] px-4 py-3.5"
+              >
+                <View className="flex-row items-center gap-2.5">
+                  <CalendarIcon size={16} color="#00E599" />
+                  <Text className="text-sm font-semibold text-white">
+                    {format(date, 'd MMMM yyyy')}
+                  </Text>
+                </View>
+                <Text className="text-xs font-bold text-[#00E599]">
+                  {datePickerOpen ? 'Hide' : 'Change'}
+                </Text>
+              </TouchableOpacity>
 
-            {datePickerOpen && (
-              <View className="mb-4 overflow-hidden rounded-xl border border-[#E8E6DF] bg-white">
-                <CalendarPicker
-                  value={date}
-                  maximumDate={new Date()}
-                  onChange={selectedDate => {
-                    setValue('date', selectedDate)
-                    setDatePickerOpen(false)
-                  }}
+              {datePickerOpen && (
+                <View className="mt-2.5 overflow-hidden rounded-2xl border border-white/10 bg-[#111420] p-2">
+                  <CalendarPicker
+                    value={date}
+                    maximumDate={new Date()}
+                    onChange={d => {
+                      setValue('date', d)
+                      setDatePickerOpen(false)
+                    }}
+                  />
+                </View>
+              )}
+            </View>
+
+            {/* Note / Description */}
+            <View className="mb-4">
+              <Text className="mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                Note (Optional)
+              </Text>
+              <View className="flex-row items-center gap-2.5 rounded-2xl border border-white/10 bg-[#111420] px-4 py-3">
+                <FileText size={16} color="#64748B" />
+                <Controller
+                  control={control}
+                  name="description"
+                  render={({ field: { value, onChange, onBlur } }) => (
+                    <TextInput
+                      value={value ?? ''}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      placeholder="What was this for?"
+                      placeholderTextColor="#475569"
+                      className="flex-1 p-0 text-sm text-white"
+                    />
+                  )}
                 />
               </View>
-            )}
-            {!datePickerOpen && <View className="mb-4" />}
+            </View>
 
-            <Text className="mb-1.5 text-xs font-medium text-brand-bg">Description (optional)</Text>
-            <Controller
-              control={control}
-              name="description"
-              render={({ field: { value, onChange, onBlur } }) => (
-                <TextInput
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  placeholder="e.g. Swiggy order"
-                  placeholderTextColor="#8A8D96"
-                  className="mb-4 rounded-xl border border-[#E8E6DF] bg-white px-4 py-3.5 text-sm text-brand-bg"
-                />
-              )}
-            />
+            {error ? (
+              <Text className="mb-3 text-center text-xs text-[#FF4D6D]">{error}</Text>
+            ) : null}
 
-            {error ? <Text className="mb-4 text-xs text-brand-coral">{error}</Text> : null}
-
+            {/* Submit Button */}
             <TouchableOpacity
               onPress={handleSubmit(onSubmit)}
               disabled={saving}
-              className="mb-2 items-center rounded-xl bg-brand-bg py-4"
               activeOpacity={0.85}
+              className="mt-2 overflow-hidden rounded-2xl shadow-lg shadow-[#00E599]/20"
             >
-              <Text className="text-sm font-semibold text-white">
-                {saving ? 'Saving…' : 'Save transaction'}
-              </Text>
+              <LinearGradient
+                colors={['#00E599', '#00B4D8']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                className="items-center justify-center py-4"
+              >
+                {saving ? (
+                  <ActivityIndicator color="#08090D" />
+                ) : (
+                  <View className="flex-row items-center justify-center gap-2">
+                    <CheckCircle2 size={18} color="#08090D" strokeWidth={2.5} />
+                    <Text className="text-sm font-black uppercase tracking-wider text-[#08090D]">
+                      Save Transaction
+                    </Text>
+                  </View>
+                )}
+              </LinearGradient>
             </TouchableOpacity>
           </ScrollView>
         )}
       </KeyboardAvoidingView>
-      {scanning && (
-        <View className="absolute inset-0 items-center justify-center bg-black/40">
-          <View className="items-center rounded-2xl bg-white px-6 py-5">
-            <ActivityIndicator color="#4A9EFF" />
-            <Text className="mt-3 text-sm text-brand-bg">Reading receipt…</Text>
-          </View>
-        </View>
-      )}
+
+      {/* AI Modals */}
+      <ReceiptScannerModal
+        visible={scannerOpen}
+        onClose={() => setScannerOpen(false)}
+        onCaptured={handleReceiptCaptured}
+      />
 
       <VoiceRecorderModal
         visible={voiceModalOpen}
@@ -379,13 +436,14 @@ const AddTransaction = () => {
         onExtracted={handleVoiceExtracted}
       />
 
-      <ReceiptScannerModal
-        visible={scannerOpen}
-        onClose={() => setScannerOpen(false)}
-        onCaptured={handleReceiptCaptured}
-      />
+      {scanning && (
+        <View className="absolute inset-0 z-50 items-center justify-center bg-black/75">
+          <View className="items-center gap-3 rounded-2xl border border-white/10 bg-[#111420] p-6">
+            <ActivityIndicator size="large" color="#00E599" />
+            <Text className="text-sm font-semibold text-white">Reading receipt with AI...</Text>
+          </View>
+        </View>
+      )}
     </SafeAreaView>
   )
 }
-
-export default AddTransaction

@@ -18,7 +18,6 @@ export default function SignUpScreen() {
   const isLoading = fetchStatus === 'fetching'
 
   const [email, setEmail] = useState('')
-  const [firstName, setFirstName] = useState('')
   const [resendMessage, setResendMessage] = useState('')
   const [isSuccess, setIsSuccess] = useState(false)
 
@@ -33,6 +32,8 @@ export default function SignUpScreen() {
       confirmPassword: '',
     },
   })
+
+  const firstName = signUpForm.watch('firstName')
 
   const codeForm = useForm<CodeFormValues>({
     resolver: zodResolver(codeSchema),

@@ -19,23 +19,23 @@ export default function PrimaryButton({
 
   return (
     <TouchableOpacity
-      activeOpacity={0.75}
+      activeOpacity={0.8}
       disabled={isDisabled}
-      className={`${fullWidth ? 'w-full' : ''} overflow-hidden rounded-lg ${
+      className={`${fullWidth ? 'w-full' : ''} overflow-hidden rounded-2xl shadow-lg shadow-emerald-500/20 ${
         isDisabled ? 'opacity-50' : ''
       }`}
       {...props}
     >
       <LinearGradient
-        colors={['#253BCE', '#00A896', '#84CC16']}
+        colors={['#00E599', '#00B4D8']}
         start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
+        end={{ x: 1, y: 1 }}
         className="items-center justify-center px-6 py-4"
       >
         {loading ? (
-          <ActivityIndicator color="#FFFFFF" size="small" />
+          <ActivityIndicator color="#08090D" size="small" />
         ) : (
-          <Text className="py-2 text-center text-lg font-bold tracking-wide text-white">
+          <Text className="text-center text-base font-bold tracking-wide text-[#08090D]">
             {title}
           </Text>
         )}

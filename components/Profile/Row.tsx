@@ -1,3 +1,4 @@
+import React from 'react'
 import { Feather } from '@expo/vector-icons'
 import { Text, TouchableOpacity, View } from 'react-native'
 
@@ -20,16 +21,24 @@ function Row({
     <TouchableOpacity
       onPress={onPress}
       disabled={!onPress}
-      className="flex-row items-center border-b border-[#F0EEE7] bg-white px-4 py-3.5 last:border-b-0"
+      activeOpacity={0.7}
+      className="flex-row items-center border-b border-white/[0.04] bg-[#111420] px-4 py-3.5"
     >
-      <View className="mr-3 h-8 w-8 items-center justify-center rounded-full bg-[#F5F4F0]">
-        <Feather name={icon} size={15} color={danger ? '#FF6B4A' : '#5C5F68'} />
+      <View
+        className={`mr-3 h-8 w-8 items-center justify-center rounded-full ${
+          danger ? 'bg-[#FF4D6D]/15' : 'bg-[#00E599]/10'
+        }`}
+      >
+        <Feather name={icon} size={15} color={danger ? '#FF4D6D' : '#00E599'} />
       </View>
-      <Text className={`flex-1 text-sm ${danger ? 'text-brand-coral' : 'text-brand-bg'}`}>
+
+      <Text className={`flex-1 text-sm font-semibold ${danger ? 'text-[#FF4D6D]' : 'text-white'}`}>
         {label}
       </Text>
-      {value && <Text className="mr-2 text-xs text-brand-text-secondary">{value}</Text>}
-      {showChevron && onPress && <Feather name="chevron-right" size={16} color="#BDC3C7" />}
+
+      {value && <Text className="mr-2 text-xs font-medium text-slate-400">{value}</Text>}
+
+      {showChevron && onPress && <Feather name="chevron-right" size={16} color="#64748B" />}
     </TouchableOpacity>
   )
 }

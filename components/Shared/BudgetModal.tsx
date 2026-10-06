@@ -1,8 +1,9 @@
+import React, { useEffect, useState } from 'react'
+import { Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { LinearGradient } from 'expo-linear-gradient'
+import * as Haptics from 'expo-haptics'
 import { useUpsertBudget } from '@/hooks/mutations/useBudgetMutations'
 import { Budget } from '@/lib/services/budgets'
-import { COLORS } from '@/constants/theme'
-import { useEffect, useState } from 'react'
-import { Text, TextInput, TouchableOpacity } from 'react-native'
 import { FormSheetModal } from './FormSheetModal'
 
 export function BudgetModal({
@@ -35,9 +36,11 @@ export function BudgetModal({
       return
     }
 
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {})
     setError('')
     try {
       await upsertBudget(parsedAmount)
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {})
       onSaved()
     } catch (err) {
       console.error('Error saving budget:', err)
@@ -48,34 +51,43 @@ export function BudgetModal({
   return (
     <FormSheetModal
       visible={visible}
-      title={budget ? 'Edit monthly budget' : 'Set monthly budget'}
+      title={budget ? 'Edit Monthly Budget' : 'Set Monthly Budget'}
       onClose={onClose}
     >
-      <Text className="mb-1.5 text-xs font-medium text-brand-bg">Monthly budget</Text>
-      <TextInput
-        value={amount}
-        onChangeText={v => {
-          setError('')
-          setAmount(v)
-        }}
-        placeholder="e.g. 50000"
-        placeholderTextColor={COLORS.placeholder}
-        keyboardType="numeric"
-        autoFocus
-        className="mb-5 rounded-xl border border-[#E8E6DF] bg-white px-4 py-3.5 text-sm text-brand-bg"
-      />
+      <Text className="mb-2 text-[11px] font-bold tracking-wider text-slate-400">BUDGET LIMIT</Text>
+      <View className="mb-4 rounded-2xl border border-white/10 bg-[#161B2A] px-4 py-3.5">
+        <TextInput
+          value={amount}
+          onChangeText={v => {
+            setError('')
+            setAmount(v)
+          }}
+          placeholder="e.g. 5000"
+          placeholderTextColor="#475569"
+          keyboardType="numeric"
+          autoFocus
+          className="p-0 text-lg font-bold text-white"
+        />
+      </View>
 
-      {error ? <Text className="mb-3 text-xs text-brand-coral">{error}</Text> : null}
+      {error ? <Text className="mb-3 text-xs text-[#FF4D6D]">{error}</Text> : null}
 
       <TouchableOpacity
         onPress={handleSave}
         disabled={saving}
-        className="mb-3 items-center rounded-xl bg-brand-bg py-4"
+        className="mb-2 overflow-hidden rounded-2xl shadow-lg shadow-[#00E599]/20"
         activeOpacity={0.85}
       >
-        <Text className="text-sm font-semibold text-white">
-          {saving ? 'Saving…' : 'Save budget'}
-        </Text>
+        <LinearGradient
+          colors={['#00E599', '#00B4D8']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          className="items-center justify-center py-4"
+        >
+          <Text className="text-sm font-bold uppercase tracking-wider text-[#08090D]">
+            {saving ? 'Saving…' : 'Save Budget'}
+          </Text>
+        </LinearGradient>
       </TouchableOpacity>
     </FormSheetModal>
   )

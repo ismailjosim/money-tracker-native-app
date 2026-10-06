@@ -1,79 +1,92 @@
+import React from 'react'
+import { Text, TouchableOpacity, View } from 'react-native'
+import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable'
 import { getCategoryConfig } from '@/constants/categories'
 import { Transaction } from '@/lib/services/transactions'
-
-import { Feather } from '@expo/vector-icons'
-import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable'
-import { Text, TouchableOpacity, View } from 'react-native'
 import { formatPrice } from '@/lib/utils/utils'
-
-const INPUT_METHOD_ICON: Record<Transaction['input_method'], keyof typeof Feather.glyphMap> = {
-  MANUAL: 'edit-3',
-  RECEIPT_SCAN: 'camera',
-  VOICE: 'mic',
-}
+import { Camera, Mic, Edit3, Trash2, AlertTriangle } from 'lucide-react-native'
 
 export function TransactionRow({ tx, onDelete }: { tx: Transaction; onDelete?: () => void }) {
   const config = getCategoryConfig(tx.category)
   const isIncome = tx.type === 'INCOME'
 
+  const MethodIcon =
+    tx.input_method === 'RECEIPT_SCAN' ? Camera : tx.input_method === 'VOICE' ? Mic : Edit3
+
   const row = (
-    <View
-      className="flex-row items-center rounded-2xl border border-[#E8E6DF] bg-white py-4 pl-3 pr-3.5"
-      style={{ borderLeftWidth: 3, borderLeftColor: config.color }}
-    >
+    <View className="flex-row items-center rounded-[18px] border border-white/[0.06] bg-[#111420] px-3.5 py-3 shadow-sm">
+      {/* Category Icon with radiant translucent glow */}
       <View
-        className="mr-3 h-10 w-10 items-center justify-center rounded-full"
-        style={{ backgroundColor: `${config.color}22` }}
+        className="mr-3 h-11 w-11 items-center justify-center rounded-full"
+        style={{ backgroundColor: `${config.color}20` }}
       >
-        <Text className="text-lg">{config.icon}</Text>
+        <Text className="text-xl">{config.icon}</Text>
       </View>
 
-      <View className="flex-1">
-        <Text className="text-sm font-medium text-brand-bg" numberOfLines={1}>
+      {/* Description & Metadata */}
+      <View className="flex-1 justify-center">
+        <Text className="mb-1 text-sm font-semibold tracking-tight text-white" numberOfLines={1}>
           {tx.description || config.label}
         </Text>
-        <View className="mt-0.5 flex-row items-center gap-1.5">
-          <Feather name={INPUT_METHOD_ICON[tx.input_method]} size={11} color="#8A8D96" />
+
+        <View className="flex-row flex-wrap items-center gap-1.5">
+          <View className="flex-row items-center gap-1 rounded-md bg-white/[0.05] px-1.5 py-0.5">
+            <MethodIcon size={10} color="#94A3B8" />
+            <Text className="text-[10px] font-medium text-slate-400">
+              {tx.input_method === 'RECEIPT_SCAN'
+                ? 'AI Scan'
+                : tx.input_method === 'VOICE'
+                  ? 'Voice'
+                  : 'Manual'}
+            </Text>
+          </View>
+
           <View
-            className="rounded-full px-1.5 py-0.5"
-            style={{ backgroundColor: `${config.color}1A` }}
+            className="rounded-md border bg-white/[0.02] px-2 py-0.5"
+            style={{ borderColor: `${config.color}33` }}
           >
-            <Text className="text-[10px] font-medium" style={{ color: config.color }}>
+            <Text className="text-[10px] font-semibold" style={{ color: config.color }}>
               {config.label}
             </Text>
           </View>
+
           {tx.is_flagged && (
-            <View className="ml-1 flex-row items-center gap-1">
-              <Feather name="alert-triangle" size={11} color="#FF6B4A" />
-              <Text className="text-[11px] text-brand-coral">Flagged</Text>
+            <View className="flex-row items-center gap-1 rounded-md bg-amber-400/15 px-1.5 py-0.5">
+              <AlertTriangle size={10} color="#FBBF24" />
+              <Text className="text-[10px] font-semibold text-amber-400">Flagged</Text>
             </View>
           )}
         </View>
       </View>
 
-      <Text
-        className={`text-sm font-medium ${isIncome ? 'text-brand-success' : 'text-brand-coral'}`}
-      >
-        {isIncome ? '+' : '-'}
-        {formatPrice(tx.amount)}
-      </Text>
+      {/* Amount with high-contrast FinTech formatting */}
+      <View className="ml-2.5 items-end">
+        <Text
+          className={`text-sm font-bold tracking-tight ${
+            isIncome ? 'text-[#00E599]' : 'text-[#FF4D6D]'
+          }`}
+        >
+          {isIncome ? '+' : '-'} {formatPrice(tx.amount)}
+        </Text>
+      </View>
     </View>
   )
 
   if (!onDelete) {
-    return <View className="mb-2.5">{row}</View>
+    return <View className="mb-2">{row}</View>
   }
 
   return (
-    <View className="mb-2.5">
+    <View className="mb-2">
       <Swipeable
         overshootRight={false}
         renderRightActions={() => (
           <TouchableOpacity
             onPress={onDelete}
-            className="ml-2 w-16 items-center justify-center rounded-2xl bg-brand-coral"
+            activeOpacity={0.8}
+            className="ml-2 w-16 items-center justify-center rounded-[18px] bg-[#FF4D6D] shadow-md shadow-red-500/20"
           >
-            <Feather name="trash-2" size={18} color="#fff" />
+            <Trash2 size={18} color="#FFFFFF" />
           </TouchableOpacity>
         )}
       >

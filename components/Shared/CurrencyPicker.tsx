@@ -1,9 +1,10 @@
-import { Feather } from '@expo/vector-icons'
-import cc from 'currency-codes'
-import getSymbol from 'currency-symbol-map'
-import { useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { FlatList, Modal, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import cc from 'currency-codes'
+import getSymbol from 'currency-symbol-map'
+import * as Haptics from 'expo-haptics'
+import { Check, Search, X } from 'lucide-react-native'
 
 export type CurrencyEntry = { code: string; name: string; symbol: string }
 
@@ -14,7 +15,7 @@ export const ALL_CURRENCIES: CurrencyEntry[] = cc
     name: cc.code(code)?.currency ?? code,
     symbol: getSymbol(code) ?? code,
   }))
-  .filter(c => c.symbol !== c.code) // drop ones with no real symbol
+  .filter(c => c.symbol !== c.code)
 
 export function CurrencyPicker({
   visible,
@@ -39,46 +40,71 @@ export function CurrencyPicker({
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
-      <SafeAreaView className="flex-1 bg-brand-body" edges={['top']}>
-        <View className="flex-row items-center gap-3 px-5 pb-2 pt-3">
-          <TextInput
-            value={search}
-            onChangeText={setSearch}
-            placeholder="Search currency…"
-            placeholderTextColor="#8A8D96"
-            autoFocus
-            className="flex-1 rounded-full border border-[#E8E6DF] bg-white px-4 py-2.5 text-sm text-brand-bg"
-          />
+      <SafeAreaView className="flex-1 bg-[#08090D]" edges={['top']}>
+        {/* Search Header */}
+        <View className="flex-row items-center gap-3 border-b border-white/[0.06] px-4 py-3">
+          <View className="flex-1 flex-row items-center gap-2 rounded-xl border border-white/10 bg-[#111420] px-3 py-2.5">
+            <Search size={16} color="#94A3B8" />
+            <TextInput
+              value={search}
+              onChangeText={setSearch}
+              placeholder="Search currency code or name…"
+              placeholderTextColor="#64748B"
+              autoFocus
+              className="flex-1 p-0 text-sm text-white"
+            />
+            {search.length > 0 && (
+              <TouchableOpacity onPress={() => setSearch('')}>
+                <X size={15} color="#94A3B8" />
+              </TouchableOpacity>
+            )}
+          </View>
           <TouchableOpacity
             onPress={() => {
               setSearch('')
               onClose()
             }}
+            className="px-1 py-1"
           >
-            <Text className="text-sm text-brand-text-secondary">Cancel</Text>
+            <Text className="text-sm font-semibold text-[#00E599]">Cancel</Text>
           </TouchableOpacity>
         </View>
 
+        {/* Currency List */}
         <FlatList
           data={filtered}
           keyExtractor={item => item.code}
           keyboardShouldPersistTaps="handled"
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => {
-                onSelect(item)
-                setSearch('')
-              }}
-              className="flex-row items-center border-b border-[#F0EDE6] px-5 py-3.5"
-            >
-              <Text className="w-8 text-sm text-brand-text-secondary">{item.symbol}</Text>
-              <Text className="w-12 text-sm font-medium text-brand-bg">{item.code}</Text>
-              <Text className="flex-1 text-sm text-brand-text-secondary" numberOfLines={1}>
-                {item.name}
-              </Text>
-              {item.code === selectedCode && <Feather name="check" size={16} color="#4A9EFF" />}
-            </TouchableOpacity>
-          )}
+          contentContainerStyle={{ paddingBottom: 40 }}
+          renderItem={({ item }) => {
+            const isSelected = item.code === selectedCode
+            return (
+              <TouchableOpacity
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
+                  onSelect(item)
+                  setSearch('')
+                }}
+                activeOpacity={0.7}
+                className={`flex-row items-center border-b border-white/[0.03] px-4 py-3.5 ${
+                  isSelected ? 'bg-[#00E599]/10' : ''
+                }`}
+              >
+                <View className="mr-3 h-10 w-10 items-center justify-center rounded-xl border border-white/5 bg-[#161B2A]">
+                  <Text className="text-base font-bold text-[#00E599]">{item.symbol}</Text>
+                </View>
+
+                <View className="flex-1">
+                  <Text className="text-sm font-bold text-white">{item.code}</Text>
+                  <Text className="mt-0.5 text-xs text-slate-400" numberOfLines={1}>
+                    {item.name}
+                  </Text>
+                </View>
+
+                {isSelected && <Check size={18} color="#00E599" strokeWidth={2.5} />}
+              </TouchableOpacity>
+            )
+          }}
         />
       </SafeAreaView>
     </Modal>

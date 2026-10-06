@@ -1,43 +1,58 @@
+import React, { useState } from 'react'
+import {
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { Image } from 'expo-image'
+import * as ImagePicker from 'expo-image-picker'
+import { useClerk, useUser } from '@clerk/expo'
+import { LinearGradient } from 'expo-linear-gradient'
+import * as Haptics from 'expo-haptics'
+import {
+  Building2,
+  Camera,
+  ChevronRight,
+  CreditCard,
+  DollarSign,
+  Landmark,
+  Lock,
+  LogOut,
+  Mail,
+  Plus,
+  Sparkles,
+  Wallet,
+} from 'lucide-react-native'
+import { router } from 'expo-router'
+
+import { AccountModal } from '@/components/Profile/AccountModal'
+import SectionLabel from '@/components/Profile/SectionLabel'
 import { useSetDefaultAccount } from '@/hooks/mutations/useAccountMutations'
 import { useAccountsQuery } from '@/hooks/queries/useAccountsQuery'
 import useSupabase from '@/hooks/useSupabase'
-import { useUserStore } from '@/store/useStore'
-import { Account, AccountType } from '@/types'
-import { useAuth, useUser } from '@clerk/expo'
-import { Feather } from '@expo/vector-icons'
-import { useRouter } from 'expo-router'
-import { useState } from 'react'
-import { ActivityIndicator, Alert, Switch, Text, TouchableOpacity, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import * as ImagePicker from 'expo-image-picker'
-import { Image } from 'expo-image'
-import { ScrollView } from 'react-native-gesture-handler'
-import SectionLabel from '@/components/Profile/SectionLabel'
-import Row from '@/components/Profile/Row'
+import { Account, AccountType } from '@/lib/services/accounts'
 import { formatPrice } from '@/lib/utils/utils'
-import { AccountModal } from '@/components/Profile/AccountModal'
+import { useUserStore } from '@/store/useStore'
 import { CurrencyPicker } from '@/components/Shared/CurrencyPicker'
 
-const ACCOUNT_ICON: Record<AccountType, keyof typeof Feather.glyphMap> = {
-  CASH: 'dollar-sign',
-  BANK: 'home',
-  CREDIT_CARD: 'credit-card',
-  SAVINGS: 'shield',
+const ACCOUNT_ICON: Record<AccountType, React.ComponentType<{ size: number; color: string }>> = {
+  CASH: Wallet,
+  BANK: Landmark,
+  CREDIT_CARD: CreditCard,
+  SAVINGS: Building2,
 }
 
-const ProfileScreen = () => {
+export default function ProfileScreen() {
   const { user } = useUser()
-  const { signOut } = useAuth()
-  const router = useRouter()
-
+  const { signOut } = useClerk()
   const supabase = useSupabase()
-  const currency = useUserStore(state => state.currency)
-  const setCurrency = useUserStore(state => state.setCurrency)
-  const [biometricLock, setBiometricLock] = useState(false)
-  const [modalVisible, setModalVisible] = useState(false)
-  const [editingAccount, setEditingAccount] = useState<Account | null>(null)
-  const [currencyPickerOpen, setCurrencyPickerOpen] = useState(false)
-  const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const currency = useUserStore(s => s.currency)
+  const setCurrency = useUserStore(s => s.setCurrency)
 
   const {
     data: accounts = [],
@@ -46,17 +61,22 @@ const ProfileScreen = () => {
   } = useAccountsQuery()
   const { mutateAsync: setDefaultAccount } = useSetDefaultAccount()
 
+  const [modalVisible, setModalVisible] = useState(false)
+  const [editingAccount, setEditingAccount] = useState<Account | null>(null)
+  const [currencyPickerOpen, setCurrencyPickerOpen] = useState(false)
+  const [biometricLock, setBiometricLock] = useState(false)
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
+
   const closeModal = () => {
     setModalVisible(false)
     setEditingAccount(null)
   }
 
   const handlePickAvatar = async () => {
-    if (!user) return
-
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync()
-    if (!permission.granted) {
-      Alert.alert('Permission needed', 'Allow photo library access to set a profile picture.')
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Allow photo library access to change your avatar.')
       return
     }
 
@@ -64,23 +84,20 @@ const ProfileScreen = () => {
       mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.7,
+      quality: 0.8,
       base64: true,
     })
-    if (result.canceled) return
+
+    if (result.canceled || !result.assets[0]?.base64) return
 
     setUploadingAvatar(true)
     try {
-      const asset = result.assets[0]
-      const filename = asset.uri.split('/').pop() || 'avatar.jpg'
-      const match = /\.(\w+)$/.exec(filename)
-      const mimeType = match ? `image/${match[1]}` : 'image/jpeg'
-      const dataUrl = `data:${mimeType};base64,${asset.base64}`
-
-      await user.setProfileImage({ file: dataUrl })
-    } catch (err) {
-      console.error('Avatar upload failed:', err)
-      Alert.alert('Error', "Couldn't upload your photo. Please try again.")
+      const mime = result.assets[0].mimeType || 'image/jpeg'
+      const base64Data = `data:${mime};base64,${result.assets[0].base64}`
+      await user?.setProfileImage({ file: base64Data })
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {})
+    } catch {
+      Alert.alert('Upload Failed', 'Could not update your avatar. Please try again.')
     } finally {
       setUploadingAvatar(false)
     }
@@ -92,30 +109,24 @@ const ProfileScreen = () => {
       await setDefaultAccount(editingAccount.id)
       closeModal()
     } catch {
-      Alert.alert('Error', "Couldn't set this as the default account.")
+      Alert.alert('Error', "Couldn't set as default account.")
     }
   }
 
-  const handleCurrencySelect = async (selected: { code: string }) => {
+  const handleCurrencySelect = async ({ code }: { code: string }) => {
+    setCurrency(code)
     setCurrencyPickerOpen(false)
     if (!user) return
-    try {
-      const { error } = await supabase
-        .from('users')
-        .update({ currency: selected.code })
-        .eq('clerk_id', user.id)
-      if (error) throw error
-      setCurrency(selected.code)
-    } catch {
-      Alert.alert('Error', "Couldn't update your currency.")
-    }
+
+    await supabase.from('users').update({ currency: code }).eq('clerk_id', user.id)
   }
 
   const handleSignOut = () => {
-    Alert.alert('Sign out', 'Are you sure you want to sign out?', [
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {})
+    Alert.alert('Sign Out', 'Are you sure you want to log out of Wallex?', [
       { text: 'Cancel', style: 'cancel' },
       {
-        text: 'Sign out',
+        text: 'Sign Out',
         style: 'destructive',
         onPress: async () => {
           await signOut()
@@ -126,112 +137,189 @@ const ProfileScreen = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-brand-body" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-[#08090D]" edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100 }}
+        contentContainerStyle={{ paddingBottom: 110 }}
       >
-        <View className="px-5 pb-2 pt-3">
-          <Text className="text-xl font-semibold text-brand-bg">Profile</Text>
+        {/* Header Title */}
+        <View className="px-5 pb-3 pt-2">
+          <Text className="text-xl font-black tracking-tight text-white">Settings & Profile</Text>
         </View>
 
-        <View className="mx-5 mt-2 items-center rounded-2xl bg-brand-bg px-5 py-6">
-          <TouchableOpacity
-            onPress={handlePickAvatar}
-            disabled={uploadingAvatar}
-            activeOpacity={0.8}
-            className="h-20 w-20 items-center  justify-center overflow-hidden rounded-full border-2 border-[#2A2E3A] bg-[#1A1D26]"
+        {/* User Identity Card */}
+        <View className="mb-2.5 px-4">
+          <LinearGradient
+            colors={['#161D2E', '#0E121D']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            className="items-center rounded-3xl border border-white/10 px-5 py-6 shadow-2xl"
           >
-            {uploadingAvatar ? (
-              <ActivityIndicator color="#8A8D96" />
-            ) : user?.imageUrl && user.hasImage ? (
-              <Image
-                source={{ uri: user.imageUrl }}
-                style={{ width: 80, height: 80 }}
-                contentFit="cover"
-              />
-            ) : (
-              <Feather name="user" size={30} color="#8A8D96" />
-            )}
-            <View className="absolute inset-x-0 bottom-0 h-6 items-center justify-center bg-black/50">
-              <Feather name="camera" size={13} color="#F2EFE9" />
-            </View>
-          </TouchableOpacity>
-          <Text className="mt-3.5 text-2xl font-bold text-white">
-            {user?.firstName} {user?.lastName}
-          </Text>
-          <View className="mt-1 flex-row items-center gap-1.5">
-            <Feather name="mail" size={11} color="#8A8D96" />
-            <Text className="text-xs text-brand-text-secondary" numberOfLines={1}>
-              {user?.emailAddresses?.[0]?.emailAddress}
+            <TouchableOpacity
+              onPress={handlePickAvatar}
+              disabled={uploadingAvatar}
+              activeOpacity={0.8}
+              className="relative h-20 w-20 items-center justify-center overflow-hidden rounded-full border-2 border-[#00E599]/40 bg-[#1E2538]"
+            >
+              {uploadingAvatar ? (
+                <ActivityIndicator color="#00E599" />
+              ) : user?.imageUrl && user.hasImage ? (
+                <Image
+                  source={{ uri: user.imageUrl }}
+                  className="h-[74px] w-[74px] rounded-full"
+                  contentFit="cover"
+                />
+              ) : (
+                <View className="h-[74px] w-[74px] items-center justify-center rounded-full bg-[#161B29]">
+                  <Text className="text-3xl font-black text-[#00E599]">
+                    {(user?.firstName?.[0] || 'W').toUpperCase()}
+                  </Text>
+                </View>
+              )}
+              <View className="absolute bottom-0 left-0 right-0 h-5 items-center justify-center bg-black/65">
+                <Camera size={11} color="#FFFFFF" />
+              </View>
+            </TouchableOpacity>
+
+            <Text className="mt-3 text-lg font-bold text-white">
+              {user?.firstName} {user?.lastName}
             </Text>
-          </View>
-        </View>
-        {/* Accounts */}
-        <SectionLabel>Accounts</SectionLabel>
-        <View className="mx-5 overflow-hidden rounded-2xl border border-[#E8E6DF]">
-          {loadingAccounts ? (
-            <View className="items-center bg-white px-4 py-5">
-              <ActivityIndicator color="#5C5F68" />
-            </View>
-          ) : accountsError ? (
-            <View className="items-center bg-white px-4 py-5">
-              <Text className="text-xs text-brand-text-muted">
-                Couldn&apos;t load your accounts.
+
+            <View className="mt-1 flex-row items-center gap-1.5">
+              <Mail size={12} color="#94A3B8" />
+              <Text className="text-xs text-slate-400" numberOfLines={1}>
+                {user?.emailAddresses?.[0]?.emailAddress}
               </Text>
             </View>
+
+            {/* Pro Tier Badge */}
+            <View className="mt-3.5 flex-row items-center gap-1.5 rounded-full border border-[#00E599]/30 bg-[#00E599]/15 px-3 py-1">
+              <Sparkles size={12} color="#00E599" />
+              <Text className="text-[10px] font-bold tracking-wider text-[#00E599]">
+                WALLEX PRO TIER
+              </Text>
+            </View>
+          </LinearGradient>
+        </View>
+
+        {/* Connected Accounts */}
+        <SectionLabel>Connected Accounts</SectionLabel>
+        <View className="mx-4 overflow-hidden rounded-2xl border border-white/10 bg-[#111420]">
+          {loadingAccounts ? (
+            <View className="items-center justify-center py-8">
+              <ActivityIndicator color="#00E599" size="small" />
+            </View>
+          ) : accountsError ? (
+            <View className="items-center justify-center py-8">
+              <Text className="text-xs text-[#FF4D6D]">Couldn&apos;t load your accounts.</Text>
+            </View>
           ) : (
-            accounts.map(account => (
-              <Row
-                key={account.id}
-                icon={ACCOUNT_ICON[account.type]}
-                label={account.name + (account.is_default ? ' (default)' : '')}
-                value={formatPrice(account.balance, currency)}
-                onPress={() => {
-                  setEditingAccount(account)
-                  setModalVisible(true)
-                }}
-              />
-            ))
+            accounts.map(account => {
+              const IconComponent = ACCOUNT_ICON[account.type] || Landmark
+              return (
+                <TouchableOpacity
+                  key={account.id}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
+                    setEditingAccount(account)
+                    setModalVisible(true)
+                  }}
+                  activeOpacity={0.7}
+                  className="flex-row items-center border-b border-white/[0.04] px-4 py-3.5"
+                >
+                  <View className="mr-3 h-8 w-8 items-center justify-center rounded-lg bg-[#00E599]/10">
+                    <IconComponent size={16} color="#00E599" />
+                  </View>
+
+                  <View className="flex-1">
+                    <View className="flex-row items-center gap-2">
+                      <Text className="text-sm font-semibold text-white">{account.name}</Text>
+                      {account.is_default && (
+                        <View className="rounded border border-[#00E599]/30 bg-[#00E599]/15 px-1.5 py-0.5">
+                          <Text className="text-[9px] font-bold text-[#00E599]">DEFAULT</Text>
+                        </View>
+                      )}
+                    </View>
+                    <Text className="mt-0.5 text-[11px] text-slate-400">{account.type}</Text>
+                  </View>
+
+                  <Text className="mr-1.5 text-sm font-bold text-white">
+                    {formatPrice(account.balance, currency)}
+                  </Text>
+                  <ChevronRight size={16} color="#64748B" />
+                </TouchableOpacity>
+              )
+            })
           )}
-          <Row
-            icon="plus"
-            label="Add account"
+
+          <TouchableOpacity
             onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
               setEditingAccount(null)
               setModalVisible(true)
             }}
-          />
+            activeOpacity={0.7}
+            className="flex-row items-center bg-white/[0.02] px-4 py-3.5"
+          >
+            <View className="mr-3 h-7 w-7 items-center justify-center rounded-lg bg-[#00E599]">
+              <Plus size={16} color="#08090D" strokeWidth={2.8} />
+            </View>
+            <Text className="flex-1 text-sm font-semibold text-[#00E599]">Add New Account</Text>
+            <ChevronRight size={16} color="#64748B" />
+          </TouchableOpacity>
         </View>
 
         {/* Preferences */}
         <SectionLabel>Preferences</SectionLabel>
-        <View className="mx-5 overflow-hidden rounded-2xl border border-[#E8E6DF]">
-          <Row
-            icon="dollar-sign"
-            label="Currency"
-            value={currency}
-            onPress={() => setCurrencyPickerOpen(true)}
-          />
-
-          <View className="flex-row items-center bg-white px-4 py-3.5">
-            <View className="mr-3 h-8 w-8 items-center justify-center rounded-full bg-[#F5F4F0]">
-              <Feather name="lock" size={15} color="#5C5F68" />
+        <View className="mx-4 overflow-hidden rounded-2xl border border-white/10 bg-[#111420]">
+          <TouchableOpacity
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
+              setCurrencyPickerOpen(true)
+            }}
+            activeOpacity={0.7}
+            className="flex-row items-center border-b border-white/[0.04] px-4 py-3.5"
+          >
+            <View className="mr-3 h-8 w-8 items-center justify-center rounded-lg bg-[#00E599]/10">
+              <DollarSign size={16} color="#00E599" />
             </View>
-            <Text className="flex-1 text-sm text-brand-bg">Biometric lock</Text>
+            <Text className="flex-1 text-sm font-semibold text-white">Display Currency</Text>
+            <View className="mr-1.5 rounded-lg border border-white/10 bg-[#161B2A] px-2.5 py-1">
+              <Text className="text-xs font-bold text-[#00E599]">{currency}</Text>
+            </View>
+            <ChevronRight size={16} color="#64748B" />
+          </TouchableOpacity>
+
+          <View className="flex-row items-center px-4 py-3.5">
+            <View className="mr-3 h-8 w-8 items-center justify-center rounded-lg bg-[#00E599]/10">
+              <Lock size={16} color="#00E599" />
+            </View>
+            <Text className="flex-1 text-sm font-semibold text-white">Biometric Security Lock</Text>
             <Switch
               value={biometricLock}
-              onValueChange={setBiometricLock}
-              thumbColor={'#8A8D96'}
-              trackColor={{ false: '#8A8D96', true: '#E8E6DF' }}
+              onValueChange={val => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
+                setBiometricLock(val)
+              }}
+              thumbColor={biometricLock ? '#00E599' : '#94A3B8'}
+              trackColor={{ false: '#1E2538', true: 'rgba(0, 229, 153, 0.3)' }}
             />
           </View>
         </View>
 
-        {/* Account actions */}
-        <SectionLabel>Account</SectionLabel>
-        <View className="mx-5 overflow-hidden rounded-2xl border border-[#E8E6DF]">
-          <Row icon="log-out" label="Sign out" onPress={handleSignOut} showChevron={false} danger />
+        {/* Security & Session */}
+        <SectionLabel>Session</SectionLabel>
+        <View className="mx-4 overflow-hidden rounded-2xl border border-white/10 bg-[#111420]">
+          <TouchableOpacity
+            onPress={handleSignOut}
+            activeOpacity={0.7}
+            className="flex-row items-center px-4 py-3.5"
+          >
+            <View className="mr-3 h-8 w-8 items-center justify-center rounded-lg bg-[#FF4D6D]/15">
+              <LogOut size={16} color="#FF4D6D" />
+            </View>
+            <Text className="text-sm font-semibold text-[#FF4D6D]">Sign Out of Wallex</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
 
@@ -255,5 +343,3 @@ const ProfileScreen = () => {
     </SafeAreaView>
   )
 }
-
-export default ProfileScreen

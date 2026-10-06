@@ -1,11 +1,10 @@
+import React from 'react'
 import { Text } from 'react-native'
 
-function SectionLabel({ children }: { children: string }) {
+export default function SectionLabel({ children }: { children: string }) {
   return (
-    <Text className="mx-5 mb-2 mt-6 text-[11px] uppercase tracking-wide text-brand-text-muted">
+    <Text className="mx-5 mb-2 mt-5 text-[11px] font-bold uppercase tracking-widest text-slate-400">
       {children}
     </Text>
   )
 }
-
-export default SectionLabel

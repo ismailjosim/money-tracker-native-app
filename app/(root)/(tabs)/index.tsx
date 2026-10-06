@@ -1,13 +1,4 @@
-import { getCategoryConfig } from '@/constants/categories'
-import { useAccountsQuery } from '@/hooks/queries/useAccountsQuery'
-import { useBudgetQuery } from '@/hooks/queries/useBudgetQuery'
-import { useTransactionsQuery } from '@/hooks/queries/useTransactionsQuery'
-import { useUserStore } from '@/store/useStore'
-import { Transaction } from '@/types'
-import { useUser } from '@clerk/expo'
-import { isSameMonth } from 'date-fns'
-import { useRouter } from 'expo-router'
-import { useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import {
   ActivityIndicator,
   RefreshControl,
@@ -16,32 +7,63 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import { Image } from 'expo-image'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Feather } from '@expo/vector-icons'
-import { formatPrice } from '@/lib/utils/utils'
+import { Image } from 'expo-image'
+import { useRouter } from 'expo-router'
+import { useUser } from '@clerk/expo'
+import { isSameMonth } from 'date-fns'
+import { LinearGradient } from 'expo-linear-gradient'
 import { PieChart } from 'react-native-gifted-charts'
+import * as Haptics from 'expo-haptics'
+import {
+  Camera,
+  Mic,
+  Plus,
+  ArrowUpRight,
+  ArrowDownRight,
+  Eye,
+  EyeOff,
+  Sparkles,
+  ArrowRight,
+  Edit2,
+  Inbox,
+  TrendingUp,
+} from 'lucide-react-native'
+
+import { getCategoryConfig } from '@/constants/categories'
+import { useAccountsQuery } from '@/hooks/queries/useAccountsQuery'
+import { useBudgetQuery } from '@/hooks/queries/useBudgetQuery'
+import { useTransactionsQuery } from '@/hooks/queries/useTransactionsQuery'
+import { useUserStore } from '@/store/useStore'
+import { Transaction } from '@/types'
+import { formatPrice } from '@/lib/utils/utils'
 import { TransactionRow } from '@/components/Shared/TransactionRow'
 import { BudgetModal } from '@/components/Shared/BudgetModal'
 
 const QUICK_ACTIONS = [
   {
-    icon: 'camera',
-    label: 'AI Receipt Scan',
+    icon: Camera,
+    label: 'AI Scan',
+    sub: 'Receipts',
     action: 'scan',
-    color: '#1A85FF',
+    color: '#00E599',
+    bgColor: 'rgba(0, 229, 153, 0.12)',
   },
   {
-    icon: 'mic',
-    label: 'Voice Entry',
+    icon: Mic,
+    label: 'Voice AI',
+    sub: 'Speak it',
     action: 'voice',
-    color: '#FF6B4A',
+    color: '#38BDF8',
+    bgColor: 'rgba(56, 189, 248, 0.12)',
   },
   {
-    icon: 'plus',
-    label: 'Add Manually',
+    icon: Plus,
+    label: 'Quick Add',
+    sub: 'Manual',
     action: 'manual',
-    color: '#3DDC84',
+    color: '#A855F7',
+    bgColor: 'rgba(168, 85, 247, 0.12)',
   },
 ] as const
 
@@ -52,12 +74,13 @@ function getGreeting() {
   return 'Good evening'
 }
 
-const HomeScreen = () => {
+export default function HomeScreen() {
   const { user } = useUser()
   const router = useRouter()
   const currency = useUserStore(s => s.currency)
 
   const [budgetModalOpen, setBudgetModalOpen] = useState(false)
+  const [showBalance, setShowBalance] = useState(true)
 
   const {
     data: accounts = [],
@@ -72,12 +95,14 @@ const HomeScreen = () => {
     isRefetching: transactionsRefetching,
     refetch: refetchTransactions,
   } = useTransactionsQuery()
+
   const { data: budget = null, refetch: refetchBudgets } = useBudgetQuery()
 
   const loading = accountLoading || transactionsLoading
   const refreshing = accountsRefetching || transactionsRefetching
 
   const onRefresh = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
     refetchAccounts()
     refetchTransactions()
     refetchBudgets()
@@ -98,6 +123,7 @@ const HomeScreen = () => {
       monthTransactions.filter(tx => tx.type === 'INCOME').reduce((sum, tx) => sum + tx.amount, 0),
     [monthTransactions]
   )
+
   const monthExpense = useMemo(
     () =>
       monthTransactions.filter(tx => tx.type === 'EXPENSE').reduce((sum, tx) => sum + tx.amount, 0),
@@ -123,207 +149,335 @@ const HomeScreen = () => {
       }))
   }, [monthTransactions])
 
+  const toggleBalancePrivacy = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
+    setShowBalance(prev => !prev)
+  }
+
   return (
-    <SafeAreaView className="flex-1 bg-brand-bg" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-[#08090D]" edges={['top']}>
       <ScrollView
-        className="flex-1 bg-brand-body"
+        className="flex-1 bg-[#08090D]"
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 10, paddingBottom: 110 }}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#00E599"
+            colors={['#00E599']}
+          />
+        }
       >
-        {/* Dark hero header */}
-        <View className=" rounded-b-[28px] bg-brand-bg px-5 pb-[22px] pt-5">
-          {/* user profile & greeting message */}
-          <View className="mb-[22px] flex-row items-center justify-between">
+        {/* Top Navigation & Profile Header */}
+        <View className="mb-5 flex-row items-center justify-between">
+          <View className="flex-row items-center gap-2">
             <Image
               source={require('../../../assets/images/transparent-logo.png')}
-              style={{ width: 80, height: '100%' }}
+              className="h-8 w-20"
               contentFit="contain"
             />
-            <View className="flex-row items-center gap-2.5">
-              <View className="items-end">
-                <Text className="text-xs text-brand-text-secondary">{getGreeting()}</Text>
-                <Text className="text-base font-medium text-brand-text-primary">
-                  {user?.firstName || user?.lastName
-                    ? `${user?.firstName || ''} ${user?.lastName || ''}`.trim()
-                    : 'there'}
-                </Text>
-              </View>
-              <TouchableOpacity
-                onPress={() => router.push('/(root)/(tabs)/profile')}
-                className="h-[38px] w-[38px] items-center justify-center overflow-hidden rounded-full bg-[#1A1D26]"
-              >
-                {user?.imageUrl && user.hasImage ? (
-                  <Image
-                    source={{ uri: user.imageUrl }}
-                    style={{ width: 38, height: 38 }}
-                    contentFit="cover"
-                  />
-                ) : (
-                  <Feather name="user" size={18} color="#8A8D96" />
-                )}
-              </TouchableOpacity>
+            <View className="flex-row items-center gap-1 rounded-full border border-[#00E599]/25 bg-[#00E599]/10 px-2 py-0.5">
+              <View className="h-1.5 w-1.5 rounded-full bg-[#00E599]" />
+              <Text className="text-[9px] font-bold tracking-wider text-[#00E599]">AI ACTIVE</Text>
             </View>
           </View>
 
-          {/* showing total balance, income and expense */}
-          <View className="mb-[22px]">
-            <Text className="mb-1.5 text-xs text-brand-text-secondary">Total balance</Text>
-            <Text className="text-[38px] font-medium tracking-tight text-brand-text-primary">
-              {formatPrice(totalBalance, currency)}
-            </Text>
-            <View className="mt-2.5 flex-row gap-3.5">
-              <View className="flex-row items-center gap-1.5">
-                <Feather name="arrow-up-right" size={14} color="#3DDC84" />
-                <Text className="text-[13px] text-brand-success">
-                  {formatPrice(monthIncome, currency)}
-                </Text>
-              </View>
-              <View className="flex-row items-center gap-1.5">
-                <Feather name="arrow-down-right" size={14} color="#FF6B4A" />
-                <Text className="text-[13px] text-brand-coral">
-                  {formatPrice(monthExpense, currency)}
-                </Text>
-              </View>
+          <View className="flex-row items-center gap-2.5">
+            <View className="items-end">
+              <Text className="text-[10px] font-medium text-slate-400">{getGreeting()}</Text>
+              <Text className="text-xs font-bold text-white" numberOfLines={1}>
+                {user?.firstName || user?.lastName
+                  ? `${user?.firstName || ''} ${user?.lastName || ''}`.trim()
+                  : 'Financier'}
+              </Text>
             </View>
-          </View>
 
-          {/* user actions for perform action */}
-          <View className="flex-row gap-2.5">
-            {QUICK_ACTIONS.map(action => (
-              <TouchableOpacity
-                key={action.label}
-                onPress={() =>
-                  router.push({
-                    pathname: '/(root)/(tabs)/add-transaction',
-                    params: { action: action.action },
-                  })
-                }
-                activeOpacity={0.75}
-                className="flex-1 items-center gap-2 rounded-2xl border border-brand-surface-border bg-brand-surface py-4"
-              >
-                <View
-                  className="h-9 w-9 items-center justify-center rounded-full"
-                  style={{ backgroundColor: `${action.color}26` }}
-                >
-                  <Feather name={action.icon} size={17} color={action.color} />
+            <TouchableOpacity
+              onPress={() => router.push('/(root)/(tabs)/profile')}
+              activeOpacity={0.8}
+              className="h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-[#00E599]/30 bg-[#161B29] shadow-md shadow-[#00E599]/10"
+            >
+              {user?.imageUrl && user.hasImage ? (
+                <Image
+                  source={{ uri: user.imageUrl }}
+                  className="h-9 w-9 rounded-full"
+                  contentFit="cover"
+                />
+              ) : (
+                <View className="h-9 w-9 items-center justify-center rounded-full bg-[#161B29]">
+                  <Text className="text-sm font-black text-[#00E599]">
+                    {(user?.firstName?.[0] || 'W').toUpperCase()}
+                  </Text>
                 </View>
-                <Text className="text-center text-[11px] font-medium text-[#B8BAC2]">
-                  {action.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
+              )}
+            </TouchableOpacity>
           </View>
         </View>
 
-        {/* Light body */}
-        <View className="px-5 pb-5 pt-[18px]">
-          {/* AI Assistant card */}
-          <TouchableOpacity
-            onPress={() => router.push('/(root)/(tabs)/assistant')}
-            className="mb-[18px] flex-row items-center gap-2.5 rounded-[18px] border border-[#E8E6DF] bg-white p-3.5"
+        {/* Hero Digital Titanium Wallet Card */}
+        <View className="mb-4">
+          <LinearGradient
+            colors={['#161D2E', '#0E121D']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            className="rounded-3xl border border-white/10 p-5 shadow-2xl"
           >
-            <View className="h-[26px] w-[26px] items-center justify-center rounded-full bg-[#4A9EFF1A]">
-              <View className="h-[7px] w-[7px] rounded-full bg-brand-blue" />
-            </View>
-            <Text className="flex-1 text-[13px] text-brand-text-muted">
-              Ask AI anything about your money
-            </Text>
-            <Feather name="arrow-right" size={16} color="#4A9EFF" />
-          </TouchableOpacity>
-
-          {/* monthly budget section */}
-          <TouchableOpacity
-            onPress={() => setBudgetModalOpen(true)}
-            activeOpacity={0.85}
-            className="mb-[18px] rounded-[18px] border border-[#E8E6DF] bg-white p-4"
-          >
-            <View className="mb-2.5 flex-row items-center justify-between">
-              <Text className="text-sm font-medium text-[#1A1D26]">Monthly budget</Text>
-              <Feather name="edit-2" size={13} color="#8A8D96" />
-            </View>
-
-            {budget ? (
-              <>
-                <Text className="mb-2 text-xs text-brand-text-secondary">
-                  {formatPrice(monthExpense, currency)} of {formatPrice(budget.amount, currency)}{' '}
-                  spent
+            <View className="mb-2 flex-row items-center justify-between">
+              <View className="flex-row items-center gap-2">
+                <Text className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                  TOTAL NET WORTH
                 </Text>
-                <View className="h-2 overflow-hidden rounded-full bg-[#F0EEE7]">
-                  <View
-                    className="h-2 rounded-full"
-                    style={{
-                      width: `${Math.min(Math.round((monthExpense / budget.amount) * 100), 100)}%`,
-                      backgroundColor:
-                        monthExpense >= budget.amount
-                          ? '#FF6B4A'
-                          : monthExpense >= budget.amount * 0.8
-                            ? '#F7DC6F'
-                            : '#3DDC84',
-                    }}
-                  />
-                </View>
-              </>
-            ) : (
-              <Text className="text-xs text-brand-text-secondary">
-                Tap to set a monthly spending budget
-              </Text>
-            )}
-          </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={toggleBalancePrivacy}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                  {showBalance ? (
+                    <Eye size={14} color="#94A3B8" />
+                  ) : (
+                    <EyeOff size={14} color="#94A3B8" />
+                  )}
+                </TouchableOpacity>
+              </View>
 
-          {/* Expense breakdown section */}
-          {expenseBreakdown.length > 0 && (
-            <View className="mb-[18px] rounded-[18px] border border-[#E8E6DF] bg-white p-4">
-              <Text className="mb-3 text-sm font-medium text-[#1A1D26]">
-                Expense breakdown (this month)
+              <View className="flex-row items-center gap-1 rounded-full border border-[#00E599]/30 bg-[#00E599]/15 px-2 py-0.5">
+                <TrendingUp size={11} color="#00E599" />
+                <Text className="text-[9px] font-bold text-[#00E599]">PRO</Text>
+              </View>
+            </View>
+
+            {/* Total Balance Amount */}
+            <View className="my-2">
+              <Text className="text-3xl font-black tracking-tight text-white">
+                {showBalance ? formatPrice(totalBalance, currency) : '••••••••'}
               </Text>
-              <View className="flex-row items-center">
-                <PieChart
-                  data={expenseBreakdown.map(c => ({
-                    value: c.amount,
-                    color: c.color,
-                  }))}
-                  radius={60}
-                  innerRadius={38}
-                  innerCircleColor="#fff"
-                />
-                {/* showing labels for each category showing first 6 data of expense breakdown */}
-                <View className="ml-4 flex-1 gap-1.5">
-                  {expenseBreakdown.slice(0, 6).map(c => (
-                    <View key={c.category} className="flex-row items-center justify-between">
-                      <View className="flex-row items-center gap-1.5">
-                        <View
-                          className="h-2 w-2 rounded-full"
-                          style={{ backgroundColor: c.color }}
-                        />
-                        <Text className="text-[11px] text-brand-text-secondary">
-                          {getCategoryConfig(c.category).label}
-                        </Text>
-                      </View>
-                      <Text className="text-[11px] font-medium text-brand-bg">
-                        {formatPrice(c.amount, currency)}
-                      </Text>
-                    </View>
-                  ))}
+            </View>
+
+            {/* Financial Performance Badges */}
+            <View className="mt-2 flex-row items-center justify-between rounded-2xl border border-white/[0.04] bg-black/30 p-3">
+              <View className="flex-1 flex-row items-center gap-2.5">
+                <View className="h-8 w-8 items-center justify-center rounded-full bg-[#00E599]/15">
+                  <ArrowUpRight size={14} color="#00E599" strokeWidth={2.5} />
+                </View>
+                <View>
+                  <Text className="text-[10px] font-medium text-slate-400">Income</Text>
+                  <Text className="text-xs font-bold text-[#00E599]">
+                    {showBalance ? formatPrice(monthIncome, currency) : '••••'}
+                  </Text>
+                </View>
+              </View>
+
+              <View className="mx-2 h-7 w-[1px] bg-white/10" />
+
+              <View className="flex-1 flex-row items-center gap-2.5">
+                <View className="h-8 w-8 items-center justify-center rounded-full bg-[#FF4D6D]/15">
+                  <ArrowDownRight size={14} color="#FF4D6D" strokeWidth={2.5} />
+                </View>
+                <View>
+                  <Text className="text-[10px] font-medium text-slate-400">Expense</Text>
+                  <Text className="text-xs font-bold text-[#FF4D6D]">
+                    {showBalance ? formatPrice(monthExpense, currency) : '••••'}
+                  </Text>
                 </View>
               </View>
             </View>
-          )}
+          </LinearGradient>
+        </View>
 
+        {/* Quick Actions Row */}
+        <View className="mb-4 flex-row gap-2.5">
+          {QUICK_ACTIONS.map(item => {
+            const Icon = item.icon
+            return (
+              <TouchableOpacity
+                key={item.label}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
+                  router.push({
+                    pathname: '/(root)/(tabs)/add-transaction',
+                    params: { action: item.action },
+                  })
+                }}
+                activeOpacity={0.75}
+                className="flex-1 items-center rounded-2xl border border-white/10 bg-[#111420] p-3 shadow-lg"
+              >
+                <View
+                  className="mb-2 h-10 w-10 items-center justify-center rounded-xl"
+                  style={{ backgroundColor: item.bgColor }}
+                >
+                  <Icon size={18} color={item.color} strokeWidth={2.2} />
+                </View>
+                <Text className="text-xs font-bold text-white">{item.label}</Text>
+                <Text className="text-[10px] text-slate-400">{item.sub}</Text>
+              </TouchableOpacity>
+            )
+          })}
+        </View>
+
+        {/* AI Financial Copilot Banner */}
+        <TouchableOpacity
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
+            router.push('/(root)/(tabs)/assistant')
+          }}
+          activeOpacity={0.85}
+          className="mb-4 overflow-hidden rounded-2xl border border-[#00D2FF]/20"
+        >
+          <LinearGradient
+            colors={['rgba(59, 130, 246, 0.15)', 'rgba(168, 85, 247, 0.1)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            className="flex-row items-center gap-3 p-3.5"
+          >
+            <View className="h-8 w-8 items-center justify-center rounded-full border border-[#00E599]/40 bg-[#00E599]/20">
+              <Sparkles size={16} color="#00E599" />
+            </View>
+            <View className="flex-1">
+              <Text className="text-xs font-bold tracking-wide text-white">Wallex Copilot</Text>
+              <Text className="text-[11px] text-slate-300">
+                Ask AI: &quot;Analyze my spending trends this month&quot;
+              </Text>
+            </View>
+            <ArrowRight size={16} color="#94A3B8" />
+          </LinearGradient>
+        </TouchableOpacity>
+
+        {/* Monthly Budget Card */}
+        <TouchableOpacity
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
+            setBudgetModalOpen(true)
+          }}
+          activeOpacity={0.85}
+          className="mb-4 rounded-2xl border border-white/10 bg-[#111420] p-4 shadow-xl"
+        >
           <View className="mb-3 flex-row items-center justify-between">
-            <Text className="text-sm font-medium text-[#1A1D26]">Recent transactions</Text>
-            <TouchableOpacity onPress={() => router.push('/(root)/(tabs)/transactions')}>
-              <Text className="text-xs text-brand-text-secondary">See all</Text>
+            <View>
+              <Text className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                Monthly Budget
+              </Text>
+              {budget ? (
+                <Text className="mt-0.5 text-xs text-slate-400">
+                  {formatPrice(monthExpense, currency)} spent of{' '}
+                  {formatPrice(budget.amount, currency)}
+                </Text>
+              ) : (
+                <Text className="mt-0.5 text-xs text-slate-400">
+                  Set a limit to automatically track caps
+                </Text>
+              )}
+            </View>
+            <View className="flex-row items-center gap-1 rounded-full border border-[#00E599]/30 bg-[#00E599]/15 px-2.5 py-1">
+              <Edit2 size={11} color="#00E599" />
+              <Text className="text-[10px] font-bold text-[#00E599]">
+                {budget ? 'Adjust' : 'Set'}
+              </Text>
+            </View>
+          </View>
+
+          {budget && (
+            <View>
+              <View className="mb-2 h-2 overflow-hidden rounded-full bg-slate-800">
+                <View
+                  className="h-full rounded-full"
+                  style={{
+                    width: `${Math.min(Math.round((monthExpense / budget.amount) * 100), 100)}%`,
+                    backgroundColor:
+                      monthExpense >= budget.amount
+                        ? '#FF4D6D'
+                        : monthExpense >= budget.amount * 0.8
+                          ? '#FBBF24'
+                          : '#00E599',
+                  }}
+                />
+              </View>
+              <View className="flex-row items-center justify-between">
+                <Text className="text-[10px] font-bold text-slate-300">
+                  {Math.round((monthExpense / budget.amount) * 100)}% Used
+                </Text>
+                <Text className="text-[10px] font-medium text-slate-400">
+                  {budget.amount - monthExpense > 0
+                    ? `${formatPrice(budget.amount - monthExpense, currency)} left`
+                    : 'Budget exceeded'}
+                </Text>
+              </View>
+            </View>
+          )}
+        </TouchableOpacity>
+
+        {/* Expense Breakdown Visualizer */}
+        {expenseBreakdown.length > 0 && (
+          <View className="mb-4 rounded-2xl border border-white/10 bg-[#111420] p-4 shadow-xl">
+            <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-300">
+              Spending Breakdown
+            </Text>
+            <View className="flex-row items-center justify-between">
+              <PieChart
+                data={expenseBreakdown.map(c => ({
+                  value: c.amount,
+                  color: c.color,
+                }))}
+                radius={56}
+                innerRadius={36}
+                innerCircleColor="#111420"
+                centerLabelComponent={() => (
+                  <View className="items-center justify-center">
+                    <Text className="text-base font-black text-white">
+                      {expenseBreakdown.length}
+                    </Text>
+                    <Text className="text-[9px] text-slate-400">Cats</Text>
+                  </View>
+                )}
+              />
+
+              <View className="ml-4 flex-1 gap-2">
+                {expenseBreakdown.slice(0, 4).map(c => (
+                  <View key={c.category} className="flex-row items-center justify-between">
+                    <View className="mr-2 flex-1 flex-row items-center gap-2">
+                      <View
+                        className="h-2.5 w-2.5 rounded-full"
+                        style={{ backgroundColor: c.color }}
+                      />
+                      <Text className="text-xs font-medium text-slate-300" numberOfLines={1}>
+                        {getCategoryConfig(c.category).label}
+                      </Text>
+                    </View>
+                    <Text className="text-xs font-bold text-white">
+                      {formatPrice(c.amount, currency)}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          </View>
+        )}
+
+        {/* Recent Activity Section */}
+        <View className="mb-6">
+          <View className="mb-3 flex-row items-center justify-between">
+            <Text className="text-xs font-bold uppercase tracking-wider text-slate-300">
+              Recent Activity
+            </Text>
+            <TouchableOpacity
+              onPress={() => router.push('/(root)/(tabs)/transactions')}
+              className="flex-row items-center gap-1"
+            >
+              <Text className="text-xs font-bold text-[#00E599]">See All</Text>
+              <ArrowRight size={13} color="#00E599" />
             </TouchableOpacity>
           </View>
 
           {loading ? (
-            <View className="items-center py-6">
-              <ActivityIndicator color="#4A9EFF" />
+            <View className="items-center justify-center py-8">
+              <ActivityIndicator color="#00E599" size="small" />
             </View>
           ) : recentTransactions.length === 0 ? (
-            <View className="items-center py-6">
-              <Feather name="inbox" size={28} color="#BDC3C7" />
-              <Text className="mt-3 text-sm text-brand-text-muted">No transactions yet</Text>
+            <View className="items-center rounded-2xl border border-white/10 bg-[#111420] p-6">
+              <Inbox size={32} color="#64748B" />
+              <Text className="mt-2 text-sm font-semibold text-white">No recent transactions</Text>
+              <Text className="mt-1 text-xs text-slate-400">
+                Your latest transactions will show up here
+              </Text>
             </View>
           ) : (
             recentTransactions.map(tx => <TransactionRow key={tx.id} tx={tx} />)
@@ -342,5 +496,3 @@ const HomeScreen = () => {
     </SafeAreaView>
   )
 }
-
-export default HomeScreen

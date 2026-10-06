@@ -7,28 +7,42 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#10B981', // Mid-way vibrant emerald
-          start: '#253BCE', // Logo base blue
-          mid: '#00A896', // Logo cyan/teal transition
-          end: '#84CC16', // Logo top lime green
+          DEFAULT: '#00E599', // Electric emerald
+          light: '#2CEAA6',
+          dark: '#00B87A',
+          start: '#3B82F6',
+          mid: '#00D2B4',
+          end: '#00E599',
         },
-        background: '#0F1115',
-        surface: '#1A1D23',
-        muted: '#8E939C',
+        background: '#08090D',
+        surface: {
+          DEFAULT: '#11141F',
+          elevated: '#161B2A',
+          card: '#131722',
+        },
+        muted: '#94A3B8',
         brand: {
-          bg: '#0B0E14',
-          body: '#F5F4F0',
-          surface: '#141822',
-          'surface-border': '#232838',
-          'text-primary': '#F2EFE9',
-          'text-secondary': '#8A8D96',
-          'text-muted': '#5C5F68',
-          // Logo palette map
-          blue: '#253BCE', // Deep vibrant indigo/blue
-          teal: '#00A896', // Gradient midpoint cyan
-          lime: '#84CC16', // Growth arrow green
-          coral: '#FF6B4A',
-          success: '#84CC16', // Synced with the growth arrow color
+          bg: '#08090D',
+          body: '#08090D',
+          surface: '#11141F',
+          'surface-card': '#131722',
+          'surface-elevated': '#161B2A',
+          'surface-border': 'rgba(255, 255, 255, 0.08)',
+          'surface-border-subtle': 'rgba(255, 255, 255, 0.04)',
+          'text-primary': '#FFFFFF',
+          'text-secondary': '#94A3B8',
+          'text-muted': '#64748B',
+          // Pro FinTech accents
+          emerald: '#00E599',
+          blue: '#3B82F6',
+          indigo: '#6366F1',
+          teal: '#00D2B4',
+          cyan: '#00D2FF',
+          coral: '#FF4D6D',
+          amber: '#FBBF24',
+          purple: '#A855F7',
+          success: '#00E599',
+          danger: '#FF4D6D',
         },
       },
     },
