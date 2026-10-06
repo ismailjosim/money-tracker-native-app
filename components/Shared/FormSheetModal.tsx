@@ -18,9 +18,9 @@ export function FormSheetModal({
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         className="flex-1 justify-end bg-black/75"
       >
-        <View className="rounded-t-[28px] border-x border-t border-white/10 bg-[#111420] px-5 pb-9 pt-3">
-          <View className="mb-4 h-1 w-9 self-center rounded-full bg-white/20" />
-          <Text className="mb-4 text-lg font-bold text-white">{title}</Text>
+        <View className="rounded-t-[28px] border-x border-t border-slate-200/80 bg-white px-5 pb-9 pt-3 dark:border-white/10 dark:bg-[#111420]">
+          <View className="mb-4 h-1 w-9 self-center rounded-full bg-slate-300 dark:bg-white/20" />
+          <Text className="mb-4 text-lg font-bold text-slate-900 dark:text-white">{title}</Text>
 
           {children}
 
@@ -29,7 +29,7 @@ export function FormSheetModal({
             activeOpacity={0.7}
             className="mt-2 items-center py-3"
           >
-            <Text className="text-sm font-medium text-slate-400">Cancel</Text>
+            <Text className="text-sm font-medium text-slate-500 dark:text-slate-400">Cancel</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>

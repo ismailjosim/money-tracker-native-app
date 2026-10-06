@@ -36,7 +36,7 @@ export default function SignUpForm({
         showTagline
       />
 
-      <View className="rounded-3xl border border-white/10 bg-[#111420] p-6 shadow-2xl">
+      <View className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#111420]">
         <View className="flex-row gap-4">
           <View className="flex-1">
             <Controller
@@ -136,7 +136,9 @@ export default function SignUpForm({
         <PrimaryButton title="Create Account" loading={loading} onPress={onSubmit} />
 
         <View className="mt-6 flex-row items-center justify-center">
-          <Text className="text-sm text-brand-text-secondary">Already have an account?</Text>
+          <Text className="text-sm text-slate-500 dark:text-slate-400">
+            Already have an account?
+          </Text>
 
           <TouchableOpacity onPress={onSignIn} activeOpacity={0.7}>
             <Text className="ml-2 text-sm font-semibold text-primary">Sign In</Text>

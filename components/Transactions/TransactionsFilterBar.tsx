@@ -27,14 +27,14 @@ export function TransactionsFilterBar({
   return (
     <View className="mb-4 gap-3">
       {/* Search Input Bar */}
-      <View className="flex-row items-center rounded-2xl border border-white/10 bg-[#111420] px-4 py-2.5 shadow-md">
+      <View className="flex-row items-center rounded-2xl border border-slate-200/80 bg-white px-4 py-2.5 shadow-md dark:border-white/10 dark:bg-[#111420]">
         <Search size={16} color="#64748B" />
         <TextInput
           value={search}
           onChangeText={onSearchChange}
           placeholder="Search by note or category…"
           placeholderTextColor="#64748B"
-          className="ml-2.5 flex-1 p-0 text-sm text-white outline-none focus:outline-none"
+          className="ml-2.5 flex-1 p-0 text-sm text-slate-900 outline-none focus:outline-none dark:text-white"
           style={
             Platform.OS === 'web' ? ({ outlineStyle: 'none', outline: 'none' } as any) : undefined
           }
@@ -62,12 +62,16 @@ export function TransactionsFilterBar({
               }}
               activeOpacity={0.75}
               className={`flex-1 items-center justify-center rounded-xl border py-2 ${
-                isSelected ? 'border-[#00E599] bg-[#00E599]' : 'border-white/10 bg-[#111420]'
+                isSelected
+                  ? 'border-[#00E599] bg-[#00E599]'
+                  : 'border-slate-200/80 bg-white dark:border-white/10 dark:bg-[#111420]'
               }`}
             >
               <Text
                 className={`text-xs ${
-                  isSelected ? 'font-bold text-[#08090D]' : 'font-semibold text-slate-400'
+                  isSelected
+                    ? 'font-bold text-[#08090D]'
+                    : 'font-semibold text-slate-700 dark:text-slate-400'
                 }`}
               >
                 {f}
@@ -93,7 +97,7 @@ export function TransactionsFilterBar({
             className={`flex-row items-center gap-1.5 rounded-xl border px-3 py-1.5 ${
               activeAccountId === null
                 ? 'border-[#00E599]/60 bg-[#00E599]/15'
-                : 'border-white/10 bg-[#111420]'
+                : 'border-slate-200/80 bg-white dark:border-white/10 dark:bg-[#111420]'
             }`}
           >
             <Wallet size={13} color={activeAccountId === null ? '#00E599' : '#64748B'} />
@@ -101,7 +105,7 @@ export function TransactionsFilterBar({
               className={`text-xs ${
                 activeAccountId === null
                   ? 'font-bold text-[#00E599]'
-                  : 'font-semibold text-slate-400'
+                  : 'font-semibold text-slate-700 dark:text-slate-400'
               }`}
             >
               All Accounts
@@ -121,12 +125,14 @@ export function TransactionsFilterBar({
                 className={`flex-row items-center gap-1.5 rounded-xl border px-3 py-1.5 ${
                   isSelected
                     ? 'border-[#00E599]/60 bg-[#00E599]/15'
-                    : 'border-white/10 bg-[#111420]'
+                    : 'border-slate-200/80 bg-white dark:border-white/10 dark:bg-[#111420]'
                 }`}
               >
                 <Text
                   className={`text-xs ${
-                    isSelected ? 'font-bold text-[#00E599]' : 'font-semibold text-slate-400'
+                    isSelected
+                      ? 'font-bold text-[#00E599]'
+                      : 'font-semibold text-slate-700 dark:text-slate-400'
                   }`}
                 >
                   {account.name}

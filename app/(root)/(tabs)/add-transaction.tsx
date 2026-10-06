@@ -194,10 +194,12 @@ export default function AddTransactionScreen() {
   const hasAccountIssues = loadingAccounts || accountsError || accounts.length === 0
 
   return (
-    <SafeAreaView className="flex-1 bg-[#08090D]" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-[#08090D]" edges={['top']}>
       {/* Top Header */}
       <View className="px-5 pb-3 pt-2.5">
-        <Text className="text-xl font-black tracking-tight text-white">New Transaction</Text>
+        <Text className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
+          New Transaction
+        </Text>
       </View>
 
       <KeyboardAvoidingView

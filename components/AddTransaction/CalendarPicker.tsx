@@ -1,5 +1,6 @@
 import React from 'react'
 import DateTimePicker, { useDefaultStyles } from 'react-native-ui-datepicker'
+import { useColorScheme } from 'nativewind'
 
 export function CalendarPicker({
   value,
@@ -10,7 +11,8 @@ export function CalendarPicker({
   onChange: (date: Date) => void
   maximumDate?: Date
 }) {
-  const defaultStyles = useDefaultStyles('dark')
+  const { colorScheme } = useColorScheme()
+  const defaultStyles = useDefaultStyles(colorScheme === 'dark' ? 'dark' : 'light')
 
   return (
     <DateTimePicker

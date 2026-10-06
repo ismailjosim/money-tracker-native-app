@@ -113,7 +113,7 @@ export default function SignInScreen() {
   if (showVerification || signIn.status === 'needs_client_trust') {
     return (
       <KeyboardAvoidingView
-        className="flex-1 bg-brand-bg"
+        className="flex-1 bg-slate-50 dark:bg-brand-bg"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView
@@ -188,7 +188,7 @@ export default function SignInScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-brand-bg"
+      className="flex-1 bg-slate-50 dark:bg-brand-bg"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView

@@ -106,9 +106,9 @@ export default function HomeScreen() {
   }, [monthTransactions])
 
   return (
-    <SafeAreaView className="flex-1 bg-[#08090D]" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-[#08090D]" edges={['top']}>
       <ScrollView
-        className="flex-1 bg-[#08090D]"
+        className="flex-1 bg-slate-50 dark:bg-[#08090D]"
         contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 10, paddingBottom: 110 }}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -156,7 +156,7 @@ export default function HomeScreen() {
         {/* Recent Activity Section */}
         <View className="mb-6">
           <View className="mb-3 flex-row items-center justify-between">
-            <Text className="text-xs font-bold uppercase tracking-wider text-slate-300">
+            <Text className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
               Recent Activity
             </Text>
             <TouchableOpacity
@@ -173,10 +173,12 @@ export default function HomeScreen() {
               <ActivityIndicator color="#00E599" size="small" />
             </View>
           ) : recentTransactions.length === 0 ? (
-            <View className="items-center rounded-2xl border border-white/10 bg-[#111420] p-6">
+            <View className="items-center rounded-2xl border border-slate-200/80 bg-white p-6 dark:border-white/10 dark:bg-[#111420]">
               <Inbox size={32} color="#64748B" />
-              <Text className="mt-2 text-sm font-semibold text-white">No recent transactions</Text>
-              <Text className="mt-1 text-xs text-slate-400">
+              <Text className="mt-2 text-sm font-semibold text-slate-900 dark:text-white">
+                No recent transactions
+              </Text>
+              <Text className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                 Your latest transactions will show up here
               </Text>
             </View>

@@ -109,12 +109,14 @@ export default function TransactionsScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#08090D]" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-[#08090D]" edges={['top']}>
       {/* Top Header */}
       <View className="flex-row items-center justify-between px-5 pb-3 pt-2">
         <View>
-          <Text className="text-xl font-black tracking-tight text-white">Transactions</Text>
-          <Text className="text-xs text-slate-400">
+          <Text className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
+            Transactions
+          </Text>
+          <Text className="text-xs text-slate-500 dark:text-slate-400">
             {filteredTransactions.length} transaction
             {filteredTransactions.length === 1 ? '' : 's'} recorded
           </Text>
@@ -124,7 +126,7 @@ export default function TransactionsScreen() {
           onPress={handleExport}
           disabled={exporting || transactions.length === 0}
           activeOpacity={0.75}
-          className="flex-row items-center gap-1.5 rounded-xl border border-white/10 bg-[#111420] px-3.5 py-2 shadow-md"
+          className="flex-row items-center gap-1.5 rounded-xl border border-slate-200/80 bg-white px-3.5 py-2 shadow-md dark:border-white/10 dark:bg-[#111420]"
         >
           {exporting ? (
             <ActivityIndicator size="small" color="#00E599" />
@@ -144,7 +146,7 @@ export default function TransactionsScreen() {
       ) : error ? (
         <View className="flex-1 items-center justify-center px-6">
           <AlertCircle size={40} color="#FF4D6D" />
-          <Text className="mt-3 text-center text-sm font-semibold text-white">
+          <Text className="mt-3 text-center text-sm font-semibold text-slate-900 dark:text-white">
             Could not load transactions
           </Text>
           <TouchableOpacity onPress={loadData} className="mt-4 rounded-xl bg-white/10 px-5 py-2.5">
@@ -188,10 +190,10 @@ export default function TransactionsScreen() {
           ListEmptyComponent={
             <View className="items-center justify-center py-16">
               <Inbox size={36} color="#64748B" />
-              <Text className="mb-1 mt-3 text-sm font-semibold text-white">
+              <Text className="mb-1 mt-3 text-sm font-semibold text-slate-900 dark:text-white">
                 {search ? 'No matching activity' : 'No activity logged yet'}
               </Text>
-              <Text className="max-w-[240px] text-center text-xs text-slate-400">
+              <Text className="max-w-[240px] text-center text-xs text-slate-500 dark:text-slate-400">
                 Transactions logged manually or via AI will display here
               </Text>
             </View>

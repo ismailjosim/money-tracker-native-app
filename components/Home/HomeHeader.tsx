@@ -38,8 +38,10 @@ export function HomeHeader({
 
       <View className="flex-row items-center gap-2.5">
         <View className="items-end">
-          <Text className="text-[10px] font-medium text-slate-400">{getGreeting()}</Text>
-          <Text className="text-xs font-bold text-white" numberOfLines={1}>
+          <Text className="text-[10px] font-medium text-slate-500 dark:text-slate-400">
+            {getGreeting()}
+          </Text>
+          <Text className="text-xs font-bold text-slate-900 dark:text-white" numberOfLines={1}>
             {user?.firstName || user?.lastName
               ? `${user?.firstName || ''} ${user?.lastName || ''}`.trim()
               : 'Financier'}

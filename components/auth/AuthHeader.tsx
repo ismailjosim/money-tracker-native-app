@@ -27,11 +27,13 @@ export default function AuthHeader({ title, subtitle, showTagline = false }: Aut
       </View>
 
       {/* Screen Title */}
-      <Text className="text-center text-2xl font-black tracking-tight text-white">{title}</Text>
+      <Text className="text-center text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+        {title}
+      </Text>
 
       {/* Subtitle */}
       {subtitle ? (
-        <Text className="mt-1.5 max-w-[320px] px-4 text-center text-xs font-normal leading-4 text-slate-400">
+        <Text className="mt-1.5 max-w-[320px] px-4 text-center text-xs font-normal leading-4 text-slate-500 dark:text-slate-400">
           {subtitle}
         </Text>
       ) : null}

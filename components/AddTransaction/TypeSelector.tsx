@@ -11,7 +11,7 @@ export function TypeSelector({
   onChange: (type: 'EXPENSE' | 'INCOME') => void
 }) {
   return (
-    <View className="mb-4 flex-row rounded-2xl border border-white/10 bg-[#111420] p-1.5">
+    <View className="mb-4 flex-row rounded-2xl border border-slate-200/80 bg-white p-1.5 dark:border-white/10 dark:bg-[#111420]">
       <TouchableOpacity
         onPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
@@ -29,7 +29,9 @@ export function TypeSelector({
         />
         <Text
           className={`text-xs ${
-            value === 'EXPENSE' ? 'font-black text-[#08090D]' : 'font-bold text-slate-400'
+            value === 'EXPENSE'
+              ? 'font-black text-[#08090D]'
+              : 'font-bold text-slate-700 dark:text-slate-400'
           }`}
         >
           Expense
@@ -53,7 +55,9 @@ export function TypeSelector({
         />
         <Text
           className={`text-xs ${
-            value === 'INCOME' ? 'font-black text-[#08090D]' : 'font-bold text-slate-400'
+            value === 'INCOME'
+              ? 'font-black text-[#08090D]'
+              : 'font-bold text-slate-700 dark:text-slate-400'
           }`}
         >
           Income

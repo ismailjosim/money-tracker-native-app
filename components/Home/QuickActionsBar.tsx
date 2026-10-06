@@ -49,7 +49,7 @@ export function QuickActionsBar() {
               })
             }}
             activeOpacity={0.75}
-            className="flex-1 items-center rounded-2xl border border-white/10 bg-[#111420] p-3 shadow-lg"
+            className="flex-1 items-center rounded-2xl border border-slate-200/80 bg-white p-3 shadow-md dark:border-white/10 dark:bg-[#111420]"
           >
             <View
               className="mb-2 h-10 w-10 items-center justify-center rounded-xl"
@@ -57,8 +57,8 @@ export function QuickActionsBar() {
             >
               <Icon size={18} color={item.color} strokeWidth={2.2} />
             </View>
-            <Text className="text-xs font-bold text-white">{item.label}</Text>
-            <Text className="text-[10px] text-slate-400">{item.sub}</Text>
+            <Text className="text-xs font-bold text-slate-900 dark:text-white">{item.label}</Text>
+            <Text className="text-[10px] text-slate-500 dark:text-slate-400">{item.sub}</Text>
           </TouchableOpacity>
         )
       })}

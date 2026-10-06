@@ -57,8 +57,10 @@ export function BudgetModal({
       title={budget ? 'Edit Monthly Budget' : 'Set Monthly Budget'}
       onClose={onClose}
     >
-      <Text className="mb-2 text-[11px] font-bold tracking-wider text-slate-400">BUDGET LIMIT</Text>
-      <View className="mb-4 rounded-2xl border border-white/10 bg-[#161B2A] px-4 py-3.5">
+      <Text className="mb-2 text-[11px] font-bold tracking-wider text-slate-500 dark:text-slate-400">
+        BUDGET LIMIT
+      </Text>
+      <View className="mb-4 rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3.5 dark:border-white/10 dark:bg-[#161B2A]">
         <TextInput
           value={amount}
           onChangeText={v => {
@@ -66,10 +68,10 @@ export function BudgetModal({
             setAmount(v)
           }}
           placeholder="e.g. 5000"
-          placeholderTextColor="#475569"
+          placeholderTextColor="#94A3B8"
           keyboardType="numeric"
           autoFocus
-          className="p-0 text-lg font-bold text-white outline-none focus:outline-none"
+          className="p-0 text-lg font-bold text-slate-900 outline-none focus:outline-none dark:text-white"
           style={
             Platform.OS === 'web' ? ({ outlineStyle: 'none', outline: 'none' } as any) : undefined
           }

@@ -123,21 +123,25 @@ export function AccountModal({
       title={isEditing ? 'Edit Account' : 'Add New Account'}
       onClose={onClose}
     >
-      <Text className="mb-2 text-[11px] font-bold tracking-wider text-slate-400">ACCOUNT NAME</Text>
-      <View className="mb-4 rounded-2xl border border-white/10 bg-[#161B2A] px-4 py-3.5">
+      <Text className="mb-2 text-[11px] font-bold tracking-wider text-slate-500 dark:text-slate-400">
+        ACCOUNT NAME
+      </Text>
+      <View className="mb-4 rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3.5 dark:border-white/10 dark:bg-[#161B2A]">
         <TextInput
           value={name}
           onChangeText={setName}
           placeholder="e.g. Chase Sapphire / Cash"
-          placeholderTextColor="#475569"
-          className="p-0 text-base font-semibold text-white outline-none focus:outline-none"
+          placeholderTextColor="#94A3B8"
+          className="p-0 text-base font-semibold text-slate-900 outline-none focus:outline-none dark:text-white"
           style={
             Platform.OS === 'web' ? ({ outlineStyle: 'none', outline: 'none' } as any) : undefined
           }
         />
       </View>
 
-      <Text className="mb-2 text-[11px] font-bold tracking-wider text-slate-400">ACCOUNT TYPE</Text>
+      <Text className="mb-2 text-[11px] font-bold tracking-wider text-slate-500 dark:text-slate-400">
+        ACCOUNT TYPE
+      </Text>
       <View className="mb-4 flex-row flex-wrap gap-2">
         {ACCOUNT_TYPES.map(t => {
           const isSelected = type === t
@@ -150,12 +154,16 @@ export function AccountModal({
               }}
               activeOpacity={0.7}
               className={`rounded-xl border px-3.5 py-2.5 ${
-                isSelected ? 'border-[#00E599] bg-[#00E599]' : 'border-white/10 bg-[#161B2A]'
+                isSelected
+                  ? 'border-[#00E599] bg-[#00E599]'
+                  : 'border-slate-200 bg-slate-100 dark:border-white/10 dark:bg-[#161B2A]'
               }`}
             >
               <Text
                 className={`text-xs ${
-                  isSelected ? 'font-bold text-[#08090D]' : 'font-semibold text-slate-400'
+                  isSelected
+                    ? 'font-bold text-[#08090D]'
+                    : 'font-semibold text-slate-700 dark:text-slate-400'
                 }`}
               >
                 {ACCOUNT_TYPE_LABEL[t]}

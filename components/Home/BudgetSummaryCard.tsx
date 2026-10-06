@@ -25,19 +25,19 @@ export function BudgetSummaryCard({
         onOpenModal()
       }}
       activeOpacity={0.85}
-      className="mb-4 rounded-2xl border border-white/10 bg-[#111420] p-4 shadow-xl"
+      className="mb-4 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xl dark:border-white/10 dark:bg-[#111420]"
     >
       <View className="mb-3 flex-row items-center justify-between">
         <View>
-          <Text className="text-xs font-bold uppercase tracking-wider text-slate-300">
+          <Text className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300">
             Monthly Budget
           </Text>
           {budget ? (
-            <Text className="mt-0.5 text-xs text-slate-400">
+            <Text className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
               {formatPrice(monthExpense, currency)} spent of {formatPrice(budget.amount, currency)}
             </Text>
           ) : (
-            <Text className="mt-0.5 text-xs text-slate-400">
+            <Text className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
               Set a limit to automatically track caps
             </Text>
           )}
@@ -50,7 +50,7 @@ export function BudgetSummaryCard({
 
       {budget && (
         <View>
-          <View className="mb-2 h-2 overflow-hidden rounded-full bg-slate-800">
+          <View className="mb-2 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
             <View
               className="h-full rounded-full"
               style={{
@@ -65,10 +65,10 @@ export function BudgetSummaryCard({
             />
           </View>
           <View className="flex-row items-center justify-between">
-            <Text className="text-[10px] font-bold text-slate-300">
+            <Text className="text-[10px] font-bold text-slate-700 dark:text-slate-300">
               {Math.round((monthExpense / budget.amount) * 100)}% Used
             </Text>
-            <Text className="text-[10px] font-medium text-slate-400">
+            <Text className="text-[10px] font-medium text-slate-500 dark:text-slate-400">
               {budget.amount - monthExpense > 0
                 ? `${formatPrice(budget.amount - monthExpense, currency)} left`
                 : 'Budget exceeded'}

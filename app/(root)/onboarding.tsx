@@ -154,7 +154,7 @@ export default function OnboardingScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#08090D]" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-[#08090D]" edges={['top', 'bottom']}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         className="flex-1"
@@ -173,16 +173,16 @@ export default function OnboardingScreen() {
                 INITIALIZE WALLEX
               </Text>
             </View>
-            <Text className="mb-2 text-center text-2xl font-black tracking-tight text-white">
+            <Text className="mb-2 text-center text-2xl font-black tracking-tight text-slate-900 dark:text-white">
               Let&apos;s Set Up Your Vault
             </Text>
-            <Text className="max-w-[280px] text-center text-xs font-normal leading-4 text-slate-400">
+            <Text className="max-w-[280px] text-center text-xs font-normal leading-4 text-slate-500 dark:text-slate-400">
               Configure your primary currency and opening ledger balance to get started.
             </Text>
           </View>
 
           {/* Form Card */}
-          <View className="rounded-3xl border border-white/10 bg-[#11141F] p-5 shadow-2xl">
+          <View className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-2xl dark:border-white/10 dark:bg-[#11141F]">
             {/* Currency Selector */}
             <CurrencySelectorCard currency={selectedCurrency} onPress={() => setPickerOpen(true)} />
 

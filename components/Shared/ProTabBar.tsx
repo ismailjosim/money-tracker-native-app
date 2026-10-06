@@ -15,7 +15,7 @@ export function ProTabBar({ state, descriptors, navigation }: BottomTabBarProps)
       style={{ paddingBottom: Math.max(insets.bottom, 12) }}
       pointerEvents="box-none"
     >
-      <View className="flex-row items-center justify-between rounded-[28px] border border-white/10 bg-[#0F131E] px-2.5 py-2 shadow-2xl">
+      <View className="flex-row items-center justify-between rounded-[28px] border border-slate-200/90 bg-white/95 px-2.5 py-2 shadow-2xl dark:border-white/10 dark:bg-[#0F131E]">
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key]
           const isFocused = state.index === index
@@ -55,7 +55,7 @@ export function ProTabBar({ state, descriptors, navigation }: BottomTabBarProps)
                     colors={['#00E599', '#00B4D8']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
-                    className="h-12 w-12 items-center justify-center rounded-full border-2 border-[#08090D]"
+                    className="h-12 w-12 items-center justify-center rounded-full border-2 border-white dark:border-[#08090D]"
                   >
                     <Plus size={24} color="#08090D" strokeWidth={2.75} />
                   </LinearGradient>
@@ -104,7 +104,9 @@ export function ProTabBar({ state, descriptors, navigation }: BottomTabBarProps)
 
               <Text
                 className={`mt-0.5 text-[10px] tracking-tight ${
-                  isFocused ? 'font-semibold text-[#00E599]' : 'font-medium text-slate-500'
+                  isFocused
+                    ? 'font-semibold text-[#00E599]'
+                    : 'font-medium text-slate-500 dark:text-slate-400'
                 }`}
               >
                 {label}

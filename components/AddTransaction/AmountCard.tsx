@@ -23,15 +23,19 @@ export function AmountCard({
   return (
     <View
       className={`mb-4 rounded-3xl border p-5 shadow-2xl ${
-        type === 'INCOME' ? 'border-[#00E599]/30 bg-[#111825]' : 'border-[#FF4D6D]/30 bg-[#19121E]'
+        type === 'INCOME'
+          ? 'border-[#00E599]/30 bg-emerald-500/10 dark:bg-[#111825]'
+          : 'border-[#FF4D6D]/30 bg-rose-500/10 dark:bg-[#19121E]'
       }`}
     >
       <View className="mb-2 flex-row items-center justify-between">
-        <Text className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+        <Text className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
           Amount
         </Text>
-        <View className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-0.5">
-          <Text className="text-[11px] font-bold text-slate-300">{currency}</Text>
+        <View className="rounded-lg border border-slate-200 bg-white/70 px-2.5 py-0.5 dark:border-white/10 dark:bg-white/5">
+          <Text className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
+            {currency}
+          </Text>
         </View>
       </View>
 
@@ -81,7 +85,7 @@ export function AmountCard({
       </View>
 
       {/* Quick Preset Increment Chips */}
-      <View className="mt-3 flex-row justify-center gap-2 border-t border-white/5 pt-3">
+      <View className="mt-3 flex-row justify-center gap-2 border-t border-slate-200/50 pt-3 dark:border-white/5">
         {[100, 500, 1000, 5000].map(addVal => (
           <TouchableOpacity
             key={addVal}
@@ -90,9 +94,9 @@ export function AmountCard({
               onAddAmount(addVal)
             }}
             activeOpacity={0.7}
-            className="rounded-xl border border-white/10 bg-white/5 px-3 py-1.5"
+            className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 dark:border-white/10 dark:bg-white/5"
           >
-            <Text className="text-xs font-bold text-slate-300">+{addVal}</Text>
+            <Text className="text-xs font-bold text-slate-700 dark:text-slate-300">+{addVal}</Text>
           </TouchableOpacity>
         ))}
       </View>

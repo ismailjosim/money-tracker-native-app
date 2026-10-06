@@ -28,7 +28,7 @@ export function ConnectedAccountsList({
   onAddAccount: () => void
 }) {
   return (
-    <View className="mx-4 overflow-hidden rounded-2xl border border-white/10 bg-[#111420]">
+    <View className="mx-4 overflow-hidden rounded-2xl border border-slate-200/80 bg-white dark:border-white/10 dark:bg-[#111420]">
       {loading ? (
         <View className="items-center justify-center py-8">
           <ActivityIndicator color="#00E599" size="small" />
@@ -48,7 +48,7 @@ export function ConnectedAccountsList({
                 onSelectAccount(account)
               }}
               activeOpacity={0.7}
-              className="flex-row items-center border-b border-white/[0.04] px-4 py-3.5"
+              className="flex-row items-center border-b border-slate-100 px-4 py-3.5 dark:border-white/[0.04]"
             >
               <View className="mr-3 h-8 w-8 items-center justify-center rounded-lg bg-[#00E599]/10">
                 <IconComponent size={16} color="#00E599" />
@@ -56,17 +56,21 @@ export function ConnectedAccountsList({
 
               <View className="flex-1">
                 <View className="flex-row items-center gap-2">
-                  <Text className="text-sm font-semibold text-white">{account.name}</Text>
+                  <Text className="text-sm font-semibold text-slate-900 dark:text-white">
+                    {account.name}
+                  </Text>
                   {account.is_default && (
                     <View className="rounded border border-[#00E599]/30 bg-[#00E599]/15 px-1.5 py-0.5">
                       <Text className="text-[9px] font-bold text-[#00E599]">DEFAULT</Text>
                     </View>
                   )}
                 </View>
-                <Text className="mt-0.5 text-[11px] text-slate-400">{account.type}</Text>
+                <Text className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
+                  {account.type}
+                </Text>
               </View>
 
-              <Text className="mr-1.5 text-sm font-bold text-white">
+              <Text className="mr-1.5 text-sm font-bold text-slate-900 dark:text-white">
                 {formatPrice(account.balance, currency)}
               </Text>
               <ChevronRight size={16} color="#64748B" />
@@ -81,7 +85,7 @@ export function ConnectedAccountsList({
           onAddAccount()
         }}
         activeOpacity={0.7}
-        className="flex-row items-center bg-white/[0.02] px-4 py-3.5"
+        className="flex-row items-center bg-slate-50/50 px-4 py-3.5 dark:bg-white/[0.02]"
       >
         <View className="mr-3 h-7 w-7 items-center justify-center rounded-lg bg-[#00E599]">
           <Plus size={16} color="#08090D" strokeWidth={2.8} />

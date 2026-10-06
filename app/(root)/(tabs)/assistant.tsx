@@ -58,11 +58,13 @@ function ProMessageBubble({ message }: { message: ChatMessage }) {
       <View className="mt-0.5 h-7 w-7 items-center justify-center rounded-full border border-[#00E599]/30 bg-[#00E599]/15">
         <Sparkles size={14} color="#00E599" />
       </View>
-      <View className="flex-1 rounded-[18px] rounded-tl-sm border border-white/10 bg-[#111420] px-4 py-3">
+      <View className="flex-1 rounded-[18px] rounded-tl-sm border border-slate-200/80 bg-white px-4 py-3 dark:border-white/10 dark:bg-[#111420]">
         <View className="mb-1.5 flex-row items-center gap-1.5">
           <Text className="text-xs font-bold text-[#00E599]">Wallex AI</Text>
         </View>
-        <Text className="text-sm font-normal leading-5 text-slate-100">{message.content}</Text>
+        <Text className="text-sm font-normal leading-5 text-slate-800 dark:text-slate-100">
+          {message.content}
+        </Text>
       </View>
     </View>
   )
@@ -122,12 +124,16 @@ export default function AssistantScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#08090D]" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-[#08090D]" edges={['top']}>
       {/* Top Header */}
-      <View className="flex-row items-center justify-between border-b border-white/[0.04] px-5 pb-3.5 pt-2.5">
+      <View className="flex-row items-center justify-between border-b border-slate-200 px-5 pb-3.5 pt-2.5 dark:border-white/[0.04]">
         <View>
-          <Text className="text-xl font-black tracking-tight text-white">AI Copilot</Text>
-          <Text className="mt-0.5 text-[11px] text-slate-400">Smart Financial Intelligence</Text>
+          <Text className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
+            AI Copilot
+          </Text>
+          <Text className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
+            Smart Financial Intelligence
+          </Text>
         </View>
 
         <View className="flex-row items-center gap-1.5 rounded-full border border-[#00E599]/30 bg-[#00E599]/10 px-2.5 py-1">
@@ -152,9 +158,9 @@ export default function AssistantScreen() {
                 <View className="mt-0.5 h-7 w-7 items-center justify-center rounded-full border border-[#00E599]/30 bg-[#00E599]/15">
                   <Sparkles size={14} color="#00E599" />
                 </View>
-                <View className="flex-row items-center gap-2.5 rounded-[18px] rounded-tl-sm border border-white/10 bg-[#111420] px-4 py-3">
+                <View className="flex-row items-center gap-2.5 rounded-[18px] rounded-tl-sm border border-slate-200/80 bg-white px-4 py-3 dark:border-white/10 dark:bg-[#111420]">
                   <ActivityIndicator size="small" color="#00E599" />
-                  <Text className="text-xs font-medium text-slate-400">
+                  <Text className="text-xs font-medium text-slate-500 dark:text-slate-400">
                     Analyzing financial ledger...
                   </Text>
                 </View>
@@ -168,7 +174,7 @@ export default function AssistantScreen() {
           <View className="mb-2.5 px-5">
             <View className="mb-2 flex-row items-center gap-1.5">
               <HelpCircle size={13} color="#94A3B8" />
-              <Text className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <Text className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Suggested Prompts
               </Text>
             </View>
@@ -178,10 +184,12 @@ export default function AssistantScreen() {
                   key={prompt}
                   onPress={() => sendMessage(prompt)}
                   activeOpacity={0.75}
-                  className="flex-row items-center gap-1.5 rounded-xl border border-white/10 bg-[#111420] px-3 py-2"
+                  className="flex-row items-center gap-1.5 rounded-xl border border-slate-200/80 bg-white px-3 py-2 dark:border-white/10 dark:bg-[#111420]"
                 >
                   <Sparkles size={11} color="#00E599" />
-                  <Text className="text-xs font-medium text-slate-300">{prompt}</Text>
+                  <Text className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                    {prompt}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -190,14 +198,14 @@ export default function AssistantScreen() {
 
         {/* Input Bar */}
         <View className="px-4 pb-24 pt-2">
-          <View className="flex-row items-center rounded-2xl border border-white/10 bg-[#111420] px-3.5 py-1.5 shadow-xl">
+          <View className="flex-row items-center rounded-2xl border border-slate-200/80 bg-white px-3.5 py-1.5 shadow-xl dark:border-white/10 dark:bg-[#111420]">
             <TextInput
               value={input}
               onChangeText={setInput}
               placeholder="Ask anything about your money..."
               placeholderTextColor="#64748B"
               editable={!sending}
-              className="flex-1 py-2 text-sm text-white outline-none focus:outline-none"
+              className="flex-1 py-2 text-sm text-slate-900 outline-none focus:outline-none dark:text-white"
               style={
                 Platform.OS === 'web'
                   ? ({ outlineStyle: 'none', outline: 'none' } as any)

@@ -105,7 +105,7 @@ export default function SignUpScreen() {
   ) {
     return (
       <KeyboardAvoidingView
-        className="flex-1 bg-brand-bg"
+        className="flex-1 bg-slate-50 dark:bg-brand-bg"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView
@@ -136,7 +136,7 @@ export default function SignUpScreen() {
   if (isSuccess) {
     return (
       <KeyboardAvoidingView
-        className="flex-1 bg-brand-bg"
+        className="flex-1 bg-slate-50 dark:bg-brand-bg"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <View className="flex-1 justify-center px-6 py-10">
@@ -155,7 +155,7 @@ export default function SignUpScreen() {
   // Default: sign-up form
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-brand-bg"
+      className="flex-1 bg-slate-50 dark:bg-brand-bg"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView

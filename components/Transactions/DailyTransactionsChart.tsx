@@ -37,19 +37,23 @@ export function DailyTransactionsChart({ transactions }: { transactions: Transac
   if (!hasData) return null
 
   return (
-    <View className="mb-4 rounded-2xl border border-white/10 bg-[#111420] p-4 shadow-xl">
+    <View className="mb-4 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xl dark:border-white/10 dark:bg-[#111420]">
       <View className="mb-3 flex-row items-center justify-between">
-        <Text className="text-xs font-bold uppercase tracking-wider text-slate-300">
+        <Text className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300">
           Monthly Flow (Income vs Expense)
         </Text>
         <View className="flex-row items-center gap-3">
           <View className="flex-row items-center gap-1.5">
             <View className="h-2 w-2 rounded-full bg-[#00E599]" />
-            <Text className="text-[10px] font-semibold text-slate-400">Income</Text>
+            <Text className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+              Income
+            </Text>
           </View>
           <View className="flex-row items-center gap-1.5">
             <View className="h-2 w-2 rounded-full bg-[#FF4D6D]" />
-            <Text className="text-[10px] font-semibold text-slate-400">Expense</Text>
+            <Text className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+              Expense
+            </Text>
           </View>
         </View>
       </View>

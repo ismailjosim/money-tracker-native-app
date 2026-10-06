@@ -21,18 +21,18 @@ export default function PasswordInput({
   return (
     <View className="mb-4">
       {label && (
-        <Text className="mb-1.5 text-xs font-bold uppercase tracking-wider text-slate-400">
+        <Text className="mb-1.5 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
           {label}
         </Text>
       )}
 
       <View
-        className={`h-12 flex-row items-center rounded-2xl border bg-[#161B2A] px-3.5 transition-colors ${
+        className={`h-12 flex-row items-center rounded-2xl border px-3.5 transition-colors ${
           error
             ? 'border-[#FF4D6D] bg-red-500/[0.03]'
             : isFocused
-              ? 'border-[#00E599] shadow-sm shadow-[#00E599]/30'
-              : 'border-white/10'
+              ? 'border-[#00E599] bg-slate-100 shadow-sm shadow-[#00E599]/30 dark:bg-[#161B2A]'
+              : 'border-slate-200 bg-slate-50 dark:border-white/10 dark:bg-[#161B2A]'
         } ${!editable ? 'opacity-50' : ''}`}
       >
         <Lock size={16} color={isFocused ? '#00E599' : '#64748B'} className="mr-2.5" />
@@ -49,10 +49,10 @@ export default function PasswordInput({
             setIsFocused(false)
             onBlur?.(e)
           }}
-          placeholderTextColor="#475569"
+          placeholderTextColor="#94A3B8"
           cursorColor="#00E599"
           selectionColor="#00E599"
-          className="flex-1 bg-transparent p-0 text-sm font-semibold text-white outline-none focus:outline-none"
+          className="flex-1 bg-transparent p-0 text-sm font-semibold text-slate-900 outline-none focus:outline-none dark:text-white"
           style={
             Platform.OS === 'web' ? ({ outlineStyle: 'none', outline: 'none' } as any) : undefined
           }

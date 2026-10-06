@@ -1,6 +1,7 @@
 import React from 'react'
 import { Text, View } from 'react-native'
 import { PieChart } from 'react-native-gifted-charts'
+import { useColorScheme } from 'nativewind'
 import { getCategoryConfig } from '@/constants/categories'
 import { formatPrice } from '@/lib/utils/utils'
 import { Transaction } from '@/types'
@@ -18,11 +19,14 @@ export function SpendingBreakdownCard({
   expenseBreakdown: ExpenseCategoryBreakdown[]
   currency: string
 }) {
+  const { colorScheme } = useColorScheme()
+  const isDark = colorScheme === 'dark'
+
   if (expenseBreakdown.length === 0) return null
 
   return (
-    <View className="mb-4 rounded-2xl border border-white/10 bg-[#111420] p-4 shadow-xl">
-      <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-300">
+    <View className="mb-4 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xl dark:border-white/10 dark:bg-[#111420]">
+      <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300">
         Spending Breakdown
       </Text>
       <View className="flex-row items-center justify-between">
@@ -33,11 +37,13 @@ export function SpendingBreakdownCard({
           }))}
           radius={56}
           innerRadius={36}
-          innerCircleColor="#111420"
+          innerCircleColor={isDark ? '#111420' : '#FFFFFF'}
           centerLabelComponent={() => (
             <View className="items-center justify-center">
-              <Text className="text-base font-black text-white">{expenseBreakdown.length}</Text>
-              <Text className="text-[9px] text-slate-400">Cats</Text>
+              <Text className="text-base font-black text-slate-900 dark:text-white">
+                {expenseBreakdown.length}
+              </Text>
+              <Text className="text-[9px] text-slate-500 dark:text-slate-400">Cats</Text>
             </View>
           )}
         />
@@ -47,11 +53,14 @@ export function SpendingBreakdownCard({
             <View key={c.category} className="flex-row items-center justify-between">
               <View className="mr-2 flex-1 flex-row items-center gap-2">
                 <View className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: c.color }} />
-                <Text className="text-xs font-medium text-slate-300" numberOfLines={1}>
+                <Text
+                  className="text-xs font-medium text-slate-700 dark:text-slate-300"
+                  numberOfLines={1}
+                >
                   {getCategoryConfig(c.category).label}
                 </Text>
               </View>
-              <Text className="text-xs font-bold text-white">
+              <Text className="text-xs font-bold text-slate-900 dark:text-white">
                 {formatPrice(c.amount, currency)}
               </Text>
             </View>

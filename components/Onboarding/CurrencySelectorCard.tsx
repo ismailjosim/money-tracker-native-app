@@ -12,7 +12,7 @@ export function CurrencySelectorCard({
 }) {
   return (
     <View className="mb-4">
-      <Text className="mb-2 text-[11px] font-bold tracking-wider text-slate-400">
+      <Text className="mb-2 text-[11px] font-bold tracking-wider text-slate-500 dark:text-slate-400">
         BASE CURRENCY
       </Text>
       <TouchableOpacity
@@ -21,15 +21,20 @@ export function CurrencySelectorCard({
           onPress()
         }}
         activeOpacity={0.8}
-        className="flex-row items-center justify-between rounded-2xl border border-white/5 bg-[#161B2A] px-4 py-3.5"
+        className="flex-row items-center justify-between rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3.5 dark:border-white/5 dark:bg-[#161B2A]"
       >
         <View className="flex-row items-center gap-3">
           <View className="h-10 w-10 items-center justify-center rounded-xl border border-[#00E599]/30 bg-[#00E599]/15">
             <Text className="text-base font-bold text-[#00E599]">{currency.symbol}</Text>
           </View>
           <View>
-            <Text className="text-base font-bold tracking-wide text-white">{currency.code}</Text>
-            <Text className="text-xs font-medium text-slate-400" numberOfLines={1}>
+            <Text className="text-base font-bold tracking-wide text-slate-900 dark:text-white">
+              {currency.code}
+            </Text>
+            <Text
+              className="text-xs font-medium text-slate-500 dark:text-slate-400"
+              numberOfLines={1}
+            >
               {currency.name}
             </Text>
           </View>
