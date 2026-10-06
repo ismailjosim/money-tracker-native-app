@@ -27,7 +27,7 @@ export function DateSelector({
           onToggle()
         }}
         activeOpacity={0.8}
-        className="flex-row items-center justify-between rounded-2xl border border-slate-200/80 bg-white px-4 py-3.5 dark:border-white/10 dark:bg-[#111420]"
+        className="flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3.5 dark:border-white/10 dark:bg-[#111420]"
       >
         <View className="flex-row items-center gap-2.5">
           <CalendarIcon size={16} color="#00E599" />
@@ -39,7 +39,7 @@ export function DateSelector({
       </TouchableOpacity>
 
       {isOpen && (
-        <View className="mt-2.5 overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-2 dark:border-white/10 dark:bg-[#111420]">
+        <View className="mt-2.5 overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 dark:border-white/10 dark:bg-[#111420]">
           <CalendarPicker value={date} maximumDate={new Date()} onChange={onSelectDate} />
         </View>
       )}

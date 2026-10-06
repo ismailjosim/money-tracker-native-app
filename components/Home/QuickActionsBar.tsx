@@ -49,7 +49,7 @@ export function QuickActionsBar() {
               })
             }}
             activeOpacity={0.75}
-            className="flex-1 items-center rounded-2xl border border-slate-200/80 bg-white p-3 shadow-md dark:border-white/10 dark:bg-[#111420]"
+            className="flex-1 items-center rounded-2xl border border-slate-200 bg-white p-3 shadow-md dark:border-white/10 dark:bg-[#111420]"
           >
             <View
               className="mb-2 h-10 w-10 items-center justify-center rounded-xl"

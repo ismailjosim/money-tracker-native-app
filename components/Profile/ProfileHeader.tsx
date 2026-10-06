@@ -3,7 +3,7 @@ import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native'
 import { Image } from 'expo-image'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Camera, Mail, Sparkles } from 'lucide-react-native'
-import { useColorScheme } from 'nativewind'
+import { useAppTheme } from '@/hooks/useAppTheme'
 
 export function ProfileHeader({
   user,
@@ -20,8 +20,7 @@ export function ProfileHeader({
   uploadingAvatar: boolean
   onPickAvatar: () => void
 }) {
-  const { colorScheme } = useColorScheme()
-  const isDark = colorScheme === 'dark'
+  const { isDark } = useAppTheme()
 
   return (
     <View className="mb-2.5 px-4">
@@ -29,7 +28,7 @@ export function ProfileHeader({
         colors={isDark ? ['#161D2E', '#0E121D'] : ['#FFFFFF', '#F8FAFC']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        className="items-center rounded-3xl border border-slate-200/80 px-5 py-6 shadow-xl dark:border-white/10"
+        className="items-center rounded-3xl border border-slate-200 px-5 py-6 shadow-xl dark:border-white/10"
       >
         <TouchableOpacity
           onPress={onPickAvatar}

@@ -11,7 +11,7 @@ export function TypeSelector({
   onChange: (type: 'EXPENSE' | 'INCOME') => void
 }) {
   return (
-    <View className="mb-4 flex-row rounded-2xl border border-slate-200/80 bg-white p-1.5 dark:border-white/10 dark:bg-[#111420]">
+    <View className="mb-4 flex-row rounded-2xl border border-slate-200 bg-white p-1.5 dark:border-white/10 dark:bg-[#111420]">
       <TouchableOpacity
         onPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})

@@ -8,7 +8,7 @@ import {
 } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'
 
-import { useColorScheme } from 'nativewind'
+import { useAppTheme } from '@/hooks/useAppTheme'
 
 type Provider = 'google' | 'apple' | 'github'
 
@@ -40,8 +40,7 @@ export default function SocialButton({
   disabled,
   ...props
 }: SocialButtonProps) {
-  const { colorScheme } = useColorScheme()
-  const isDark = colorScheme === 'dark'
+  const { isDark } = useAppTheme()
   const config = providerConfig[provider]
 
   const isDisabled = loading || disabled

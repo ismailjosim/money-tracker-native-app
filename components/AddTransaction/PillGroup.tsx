@@ -34,7 +34,7 @@ export function PillGroup<T extends string>({
             className={`flex-row items-center gap-1.5 rounded-xl border px-3 py-2 ${
               isSelected
                 ? 'border-[#00E599] bg-[#00E599]'
-                : 'border-slate-200/80 bg-white dark:border-white/10 dark:bg-[#111420]'
+                : 'border-slate-200 bg-white dark:border-white/10 dark:bg-[#111420]'
             }`}
           >
             {option.icon && <Text className="mr-0.5 text-lg">{option.icon}</Text>}

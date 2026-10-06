@@ -27,7 +27,7 @@ export function TransactionsFilterBar({
   return (
     <View className="mb-4 gap-3">
       {/* Search Input Bar */}
-      <View className="flex-row items-center rounded-2xl border border-slate-200/80 bg-white px-4 py-2.5 shadow-md dark:border-white/10 dark:bg-[#111420]">
+      <View className="flex-row items-center rounded-2xl border border-slate-200 bg-white px-4 py-2.5 shadow-md dark:border-white/10 dark:bg-[#111420]">
         <Search size={16} color="#64748B" />
         <TextInput
           value={search}
@@ -64,7 +64,7 @@ export function TransactionsFilterBar({
               className={`flex-1 items-center justify-center rounded-xl border py-2 ${
                 isSelected
                   ? 'border-[#00E599] bg-[#00E599]'
-                  : 'border-slate-200/80 bg-white dark:border-white/10 dark:bg-[#111420]'
+                  : 'border-slate-200 bg-white dark:border-white/10 dark:bg-[#111420]'
               }`}
             >
               <Text
@@ -97,7 +97,7 @@ export function TransactionsFilterBar({
             className={`flex-row items-center gap-1.5 rounded-xl border px-3 py-1.5 ${
               activeAccountId === null
                 ? 'border-[#00E599]/60 bg-[#00E599]/15'
-                : 'border-slate-200/80 bg-white dark:border-white/10 dark:bg-[#111420]'
+                : 'border-slate-200 bg-white dark:border-white/10 dark:bg-[#111420]'
             }`}
           >
             <Wallet size={13} color={activeAccountId === null ? '#00E599' : '#64748B'} />
@@ -125,7 +125,7 @@ export function TransactionsFilterBar({
                 className={`flex-row items-center gap-1.5 rounded-xl border px-3 py-1.5 ${
                   isSelected
                     ? 'border-[#00E599]/60 bg-[#00E599]/15'
-                    : 'border-slate-200/80 bg-white dark:border-white/10 dark:bg-[#111420]'
+                    : 'border-slate-200 bg-white dark:border-white/10 dark:bg-[#111420]'
                 }`}
               >
                 <Text

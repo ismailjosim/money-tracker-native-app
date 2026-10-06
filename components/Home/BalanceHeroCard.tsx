@@ -2,7 +2,7 @@ import React from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { ArrowDownRight, ArrowUpRight, Eye, EyeOff, TrendingUp } from 'lucide-react-native'
-import { useColorScheme } from 'nativewind'
+import { useAppTheme } from '@/hooks/useAppTheme'
 import { formatPrice } from '@/lib/utils/utils'
 
 export function BalanceHeroCard({
@@ -20,8 +20,7 @@ export function BalanceHeroCard({
   showBalance: boolean
   onTogglePrivacy: () => void
 }) {
-  const { colorScheme } = useColorScheme()
-  const isDark = colorScheme === 'dark'
+  const { isDark } = useAppTheme()
 
   return (
     <View className="mb-4">
@@ -29,7 +28,7 @@ export function BalanceHeroCard({
         colors={isDark ? ['#161D2E', '#0E121D'] : ['#FFFFFF', '#F8FAFC']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        className="rounded-3xl border border-slate-200/80 p-5 shadow-xl dark:border-white/10"
+        className="rounded-3xl border border-slate-200 p-5 shadow-xl dark:border-white/10"
       >
         <View className="mb-2 flex-row items-center justify-between">
           <View className="flex-row items-center gap-2">

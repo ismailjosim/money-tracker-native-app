@@ -1,7 +1,7 @@
 import React from 'react'
 import { Text, View } from 'react-native'
 import { PieChart } from 'react-native-gifted-charts'
-import { useColorScheme } from 'nativewind'
+import { useAppTheme } from '@/hooks/useAppTheme'
 import { getCategoryConfig } from '@/constants/categories'
 import { formatPrice } from '@/lib/utils/utils'
 import { Transaction } from '@/types'
@@ -19,13 +19,12 @@ export function SpendingBreakdownCard({
   expenseBreakdown: ExpenseCategoryBreakdown[]
   currency: string
 }) {
-  const { colorScheme } = useColorScheme()
-  const isDark = colorScheme === 'dark'
+  const { isDark } = useAppTheme()
 
   if (expenseBreakdown.length === 0) return null
 
   return (
-    <View className="mb-4 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xl dark:border-white/10 dark:bg-[#111420]">
+    <View className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl dark:border-white/10 dark:bg-[#111420]">
       <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-300">
         Spending Breakdown
       </Text>

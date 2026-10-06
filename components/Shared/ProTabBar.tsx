@@ -15,7 +15,7 @@ export function ProTabBar({ state, descriptors, navigation }: BottomTabBarProps)
       style={{ paddingBottom: Math.max(insets.bottom, 12) }}
       pointerEvents="box-none"
     >
-      <View className="flex-row items-center justify-between rounded-[28px] border border-slate-200/90 bg-white/95 px-2.5 py-2 shadow-2xl dark:border-white/10 dark:bg-[#0F131E]">
+      <View className="flex-row items-center justify-between rounded-[28px] border border-slate-200 bg-white/95 px-2.5 py-2 shadow-2xl dark:border-white/10 dark:bg-[#0F131E]">
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key]
           const isFocused = state.index === index

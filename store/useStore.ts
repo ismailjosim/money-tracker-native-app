@@ -5,6 +5,8 @@ interface UserStore {
   setCurrency: (currency: string) => void
   needOnboarding: boolean | null
   setNeedOnboarding: (needOnboarding: boolean | null) => void
+  theme: 'dark' | 'light'
+  setTheme: (theme: 'dark' | 'light') => void
 }
 
 export const useUserStore = create<UserStore>(set => ({
@@ -12,4 +14,6 @@ export const useUserStore = create<UserStore>(set => ({
   setCurrency: currency => set({ currency }),
   needOnboarding: null,
   setNeedOnboarding: needOnboarding => set({ needOnboarding }),
+  theme: 'dark',
+  setTheme: theme => set({ theme }),
 }))

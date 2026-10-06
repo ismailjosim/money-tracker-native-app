@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --css-interop-darkMode: class dark;
+}
+
+*,
+::before,
+::after {
+  border-color: #e2e8f0;
+}
+
+.dark *,
+.dark ::before,
+.dark ::after {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
 @layer base {
   input,
   textarea,

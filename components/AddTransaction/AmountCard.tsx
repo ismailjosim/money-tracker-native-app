@@ -85,7 +85,7 @@ export function AmountCard({
       </View>
 
       {/* Quick Preset Increment Chips */}
-      <View className="mt-3 flex-row justify-center gap-2 border-t border-slate-200/50 pt-3 dark:border-white/5">
+      <View className="mt-3 flex-row justify-center gap-2 border-t border-slate-100 pt-3 dark:border-white/5">
         {[100, 500, 1000, 5000].map(addVal => (
           <TouchableOpacity
             key={addVal}

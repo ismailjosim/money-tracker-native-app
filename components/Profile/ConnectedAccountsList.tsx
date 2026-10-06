@@ -28,7 +28,7 @@ export function ConnectedAccountsList({
   onAddAccount: () => void
 }) {
   return (
-    <View className="mx-4 overflow-hidden rounded-2xl border border-slate-200/80 bg-white dark:border-white/10 dark:bg-[#111420]">
+    <View className="mx-4 overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#111420]">
       {loading ? (
         <View className="items-center justify-center py-8">
           <ActivityIndicator color="#00E599" size="small" />

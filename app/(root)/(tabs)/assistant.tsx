@@ -7,6 +7,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -37,8 +38,67 @@ const INITIAL_MESSAGES: ChatMessage[] = [
   },
 ]
 
+/** Renders inline markdown: **bold**, *italic*, `code`, and \n newlines */
+function MarkdownText({ content, color }: { content: string; color: string }) {
+  const lines = content.split('\n')
+
+  const parseInline = (line: string, lineIdx: number) => {
+    const tokens: { text: string; bold?: boolean; italic?: boolean; code?: boolean }[] = []
+    const regex = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`)/g
+    let last = 0
+    let match: RegExpExecArray | null
+
+    while ((match = regex.exec(line)) !== null) {
+      if (match.index > last) tokens.push({ text: line.slice(last, match.index) })
+      if (match[2]) tokens.push({ text: match[2], bold: true })
+      else if (match[3]) tokens.push({ text: match[3], italic: true })
+      else if (match[4]) tokens.push({ text: match[4], code: true })
+      last = match.index + match[0].length
+    }
+    if (last < line.length) tokens.push({ text: line.slice(last) })
+
+    return (
+      <Text key={lineIdx} style={{ fontSize: 14, lineHeight: 22, color }}>
+        {tokens.map((tok, i) => (
+          <Text
+            key={i}
+            style={[
+              { color },
+              tok.bold ? { fontWeight: '700' } : undefined,
+              tok.italic ? { fontStyle: 'italic' } : undefined,
+              tok.code
+                ? {
+                    fontFamily: 'monospace',
+                    backgroundColor: 'rgba(0,229,153,0.15)',
+                    borderRadius: 4,
+                    paddingHorizontal: 3,
+                  }
+                : undefined,
+            ]}
+          >
+            {tok.text}
+          </Text>
+        ))}
+      </Text>
+    )
+  }
+
+  return (
+    <Text style={{ fontSize: 14, lineHeight: 22, color }}>
+      {lines.map((line, idx) => (
+        <Text key={idx} style={{ color }}>
+          {parseInline(line, idx)}
+          {idx < lines.length - 1 ? '\n' : ''}
+        </Text>
+      ))}
+    </Text>
+  )
+}
+
 function ProMessageBubble({ message }: { message: ChatMessage }) {
   const isUser = message.role === 'user'
+  const scheme = useColorScheme()
+  const textColor = scheme === 'dark' ? '#E2E8F0' : '#1E293B'
 
   if (isUser) {
     return (
@@ -58,13 +118,11 @@ function ProMessageBubble({ message }: { message: ChatMessage }) {
       <View className="mt-0.5 h-7 w-7 items-center justify-center rounded-full border border-[#00E599]/30 bg-[#00E599]/15">
         <Sparkles size={14} color="#00E599" />
       </View>
-      <View className="flex-1 rounded-[18px] rounded-tl-sm border border-slate-200/80 bg-white px-4 py-3 dark:border-white/10 dark:bg-[#111420]">
+      <View className="flex-1 rounded-[18px] rounded-tl-sm border border-slate-200 bg-white px-4 py-3 dark:border-white/10 dark:bg-[#111420]">
         <View className="mb-1.5 flex-row items-center gap-1.5">
           <Text className="text-xs font-bold text-[#00E599]">Wallex AI</Text>
         </View>
-        <Text className="text-sm font-normal leading-5 text-slate-800 dark:text-slate-100">
-          {message.content}
-        </Text>
+        <MarkdownText content={message.content} color={textColor} />
       </View>
     </View>
   )
@@ -107,22 +165,28 @@ export default function AssistantScreen() {
         ...prev,
         { id: (Date.now() + 1).toString(), role: 'assistant', content: reply },
       ])
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Assistant error:', err)
+      const errMessage = err instanceof Error ? err.message : String(err)
+      const isAuthError =
+        errMessage.includes('API key') ||
+        errMessage.includes('401') ||
+        errMessage.includes('authentication failed')
+
       setMessages(prev => [
         ...prev,
         {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content:
-            'I ran into an issue analyzing that request. Please verify your connection and try again.',
+          content: isAuthError
+            ? 'Gemini API authentication failed: please ensure your EXPO_PUBLIC_GEMINI_API_KEY is properly set in your .env file.'
+            : 'I ran into an issue analyzing that request. Please verify your connection and try again.',
         },
       ])
     } finally {
       setSending(false)
     }
   }
-
   return (
     <SafeAreaView className="flex-1 bg-slate-50 dark:bg-[#08090D]" edges={['top']}>
       {/* Top Header */}
@@ -158,7 +222,7 @@ export default function AssistantScreen() {
                 <View className="mt-0.5 h-7 w-7 items-center justify-center rounded-full border border-[#00E599]/30 bg-[#00E599]/15">
                   <Sparkles size={14} color="#00E599" />
                 </View>
-                <View className="flex-row items-center gap-2.5 rounded-[18px] rounded-tl-sm border border-slate-200/80 bg-white px-4 py-3 dark:border-white/10 dark:bg-[#111420]">
+                <View className="flex-row items-center gap-2.5 rounded-[18px] rounded-tl-sm border border-slate-200 bg-white px-4 py-3 dark:border-white/10 dark:bg-[#111420]">
                   <ActivityIndicator size="small" color="#00E599" />
                   <Text className="text-xs font-medium text-slate-500 dark:text-slate-400">
                     Analyzing financial ledger...
@@ -184,7 +248,7 @@ export default function AssistantScreen() {
                   key={prompt}
                   onPress={() => sendMessage(prompt)}
                   activeOpacity={0.75}
-                  className="flex-row items-center gap-1.5 rounded-xl border border-slate-200/80 bg-white px-3 py-2 dark:border-white/10 dark:bg-[#111420]"
+                  className="flex-row items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 dark:border-white/10 dark:bg-[#111420]"
                 >
                   <Sparkles size={11} color="#00E599" />
                   <Text className="text-xs font-medium text-slate-700 dark:text-slate-300">
@@ -198,7 +262,7 @@ export default function AssistantScreen() {
 
         {/* Input Bar */}
         <View className="px-4 pb-24 pt-2">
-          <View className="flex-row items-center rounded-2xl border border-slate-200/80 bg-white px-3.5 py-1.5 shadow-xl dark:border-white/10 dark:bg-[#111420]">
+          <View className="flex-row items-center rounded-2xl border border-slate-200 bg-white px-3.5 py-1.5 shadow-xl dark:border-white/10 dark:bg-[#111420]">
             <TextInput
               value={input}
               onChangeText={setInput}

@@ -25,7 +25,7 @@ export function BudgetSummaryCard({
         onOpenModal()
       }}
       activeOpacity={0.85}
-      className="mb-4 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xl dark:border-white/10 dark:bg-[#111420]"
+      className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl dark:border-white/10 dark:bg-[#111420]"
     >
       <View className="mb-3 flex-row items-center justify-between">
         <View>

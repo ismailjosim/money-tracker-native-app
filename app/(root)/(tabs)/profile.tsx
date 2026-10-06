@@ -5,8 +5,7 @@ import * as ImagePicker from 'expo-image-picker'
 import { useClerk, useUser } from '@clerk/expo'
 import * as Haptics from 'expo-haptics'
 import { ChevronRight, DollarSign, Lock, LogOut, Moon, Sun } from 'lucide-react-native'
-import { router } from 'expo-router'
-import { useColorScheme } from 'nativewind'
+import { useAppTheme } from '@/hooks/useAppTheme'
 
 import { AccountModal } from '@/components/Profile/AccountModal'
 import { ProfileHeader } from '@/components/Profile/ProfileHeader'
@@ -20,13 +19,13 @@ import { useUserStore } from '@/store/useStore'
 import { CurrencyPicker } from '@/components/Shared/CurrencyPicker'
 import { ConfirmDialog } from '@/components/Shared/ConfirmDialog'
 import { toast } from '@/store/useToastStore'
+import { router } from 'expo-router'
 
 export default function ProfileScreen() {
   const { user } = useUser()
   const { signOut } = useClerk()
   const supabase = useSupabase()
-  const { colorScheme, setColorScheme } = useColorScheme()
-  const isDark = colorScheme === 'dark'
+  const { isDark, toggleTheme } = useAppTheme()
 
   const currency = useUserStore(s => s.currency)
   const setCurrency = useUserStore(s => s.setCurrency)
@@ -159,7 +158,7 @@ export default function ProfileScreen() {
 
         {/* Preferences */}
         <SectionLabel>Preferences</SectionLabel>
-        <View className="mx-4 overflow-hidden rounded-2xl border border-slate-200/80 bg-white dark:border-white/10 dark:bg-[#111420]">
+        <View className="mx-4 overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#111420]">
           <TouchableOpacity
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
@@ -218,7 +217,7 @@ export default function ProfileScreen() {
               value={isDark}
               onValueChange={val => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {})
-                setColorScheme(val ? 'dark' : 'light')
+                toggleTheme()
                 toast.info(`${val ? 'Dark' : 'Light'} theme enabled`)
               }}
               thumbColor={isDark ? '#00E599' : '#F59E0B'}
@@ -232,7 +231,7 @@ export default function ProfileScreen() {
 
         {/* Session Section */}
         <SectionLabel>Session</SectionLabel>
-        <View className="mx-4 overflow-hidden rounded-2xl border border-slate-200/80 bg-white dark:border-white/10 dark:bg-[#111420]">
+        <View className="mx-4 overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#111420]">
           <TouchableOpacity
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {})

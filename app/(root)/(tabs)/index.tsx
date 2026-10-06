@@ -173,7 +173,7 @@ export default function HomeScreen() {
               <ActivityIndicator color="#00E599" size="small" />
             </View>
           ) : recentTransactions.length === 0 ? (
-            <View className="items-center rounded-2xl border border-slate-200/80 bg-white p-6 dark:border-white/10 dark:bg-[#111420]">
+            <View className="items-center rounded-2xl border border-slate-200 bg-white p-6 dark:border-white/10 dark:bg-[#111420]">
               <Inbox size={32} color="#64748B" />
               <Text className="mt-2 text-sm font-semibold text-slate-900 dark:text-white">
                 No recent transactions

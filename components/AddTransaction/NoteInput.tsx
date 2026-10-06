@@ -10,7 +10,7 @@ export function NoteInput({ control }: { control: Control<TransactionFormValues>
       <Text className="mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
         Note (Optional)
       </Text>
-      <View className="flex-row items-center gap-2.5 rounded-2xl border border-slate-200/80 bg-white px-4 py-3 dark:border-white/10 dark:bg-[#111420]">
+      <View className="flex-row items-center gap-2.5 rounded-2xl border border-slate-200 bg-white px-4 py-3 dark:border-white/10 dark:bg-[#111420]">
         <FileText size={16} color="#64748B" />
         <Controller
           control={control}

@@ -32,9 +32,12 @@ async function callGemini(promptText: string, inlineData: { mimeType: string; da
     ? inlineData.data.split('base64,')[1]
     : inlineData.data
 
-  const res = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
+  const res = await fetch(GEMINI_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'x-goog-api-key': apiKey,
+    },
     body: JSON.stringify({
       contents: [
         {
@@ -54,7 +57,12 @@ async function callGemini(promptText: string, inlineData: { mimeType: string; da
 
   if (!res.ok) {
     const errText = await res.text()
-    throw new Error(`Gemini request failed: ${errText}`)
+    if (res.status === 401) {
+      throw new Error(
+        'Invalid or unauthorized Gemini API key. Ensure your EXPO_PUBLIC_GEMINI_API_KEY is an AI Studio API key (starts with "AIza").'
+      )
+    }
+    throw new Error(`Gemini request failed (${res.status}): ${errText}`)
   }
 
   const data = await res.json()

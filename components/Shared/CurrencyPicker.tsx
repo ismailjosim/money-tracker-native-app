@@ -43,7 +43,7 @@ export function CurrencyPicker({
       <SafeAreaView className="flex-1 bg-slate-50 dark:bg-[#08090D]" edges={['top']}>
         {/* Search Header */}
         <View className="flex-row items-center gap-3 border-b border-slate-200 px-4 py-3 dark:border-white/[0.06]">
-          <View className="flex-1 flex-row items-center gap-2 rounded-xl border border-slate-200/80 bg-white px-3 py-2.5 dark:border-white/10 dark:bg-[#111420]">
+          <View className="flex-1 flex-row items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 dark:border-white/10 dark:bg-[#111420]">
             <Search size={16} color="#94A3B8" />
             <TextInput
               value={search}

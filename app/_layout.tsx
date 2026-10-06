@@ -6,9 +6,9 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from '@/lib/query/client'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { StatusBar } from 'expo-status-bar'
-import { useColorScheme } from 'nativewind'
 
 import { ProToast } from '@/components/Shared/ProToast'
+import { useAppTheme } from '@/hooks/useAppTheme'
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
 
@@ -17,13 +17,13 @@ if (!publishableKey) {
 }
 
 export default function RootLayout() {
-  const { colorScheme } = useColorScheme()
+  const { isDark } = useAppTheme()
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
         <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-          <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+          <StatusBar style={isDark ? 'light' : 'dark'} />
           <Slot />
           <ProToast />
         </ClerkProvider>

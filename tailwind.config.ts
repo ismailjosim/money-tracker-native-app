@@ -6,6 +6,9 @@ export default {
   presets: [require('nativewind/preset')],
   theme: {
     extend: {
+      borderColor: {
+        DEFAULT: '#E2E8F0',
+      },
       colors: {
         primary: {
           DEFAULT: '#00E599', // Electric emerald

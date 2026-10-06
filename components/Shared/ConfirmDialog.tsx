@@ -42,7 +42,7 @@ export function ConfirmDialog({
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         className="flex-1 items-center justify-center bg-black/80 px-6 backdrop-blur-md"
       >
-        <View className="w-full max-w-sm overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-6 shadow-2xl shadow-black dark:border-white/10 dark:bg-[#131722]">
+        <View className="w-full max-w-sm overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl shadow-black dark:border-white/10 dark:bg-[#131722]">
           {/* Glowing Icon Header */}
           <View className="mb-4 items-center">
             <View

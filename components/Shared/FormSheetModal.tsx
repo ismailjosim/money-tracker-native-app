@@ -18,7 +18,7 @@ export function FormSheetModal({
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         className="flex-1 justify-end bg-black/75"
       >
-        <View className="rounded-t-[28px] border-x border-t border-slate-200/80 bg-white px-5 pb-9 pt-3 dark:border-white/10 dark:bg-[#111420]">
+        <View className="rounded-t-[28px] border-x border-t border-slate-200 bg-white px-5 pb-9 pt-3 dark:border-white/10 dark:bg-[#111420]">
           <View className="mb-4 h-1 w-9 self-center rounded-full bg-slate-300 dark:bg-white/20" />
           <Text className="mb-4 text-lg font-bold text-slate-900 dark:text-white">{title}</Text>
 

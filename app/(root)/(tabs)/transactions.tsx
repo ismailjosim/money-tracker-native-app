@@ -126,7 +126,7 @@ export default function TransactionsScreen() {
           onPress={handleExport}
           disabled={exporting || transactions.length === 0}
           activeOpacity={0.75}
-          className="flex-row items-center gap-1.5 rounded-xl border border-slate-200/80 bg-white px-3.5 py-2 shadow-md dark:border-white/10 dark:bg-[#111420]"
+          className="flex-row items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 shadow-md dark:border-white/10 dark:bg-[#111420]"
         >
           {exporting ? (
             <ActivityIndicator size="small" color="#00E599" />

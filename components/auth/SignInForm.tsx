@@ -40,7 +40,7 @@ export default function SignInForm({
     <>
       <AuthHeader title="Welcome Back" subtitle="Sign in to continue managing your finances." />
 
-      <View className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#111420]">
+      <View className="rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#111420]">
         <Controller
           control={control}
           name="email"

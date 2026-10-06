@@ -182,7 +182,7 @@ export default function OnboardingScreen() {
           </View>
 
           {/* Form Card */}
-          <View className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-2xl dark:border-white/10 dark:bg-[#11141F]">
+          <View className="rounded-3xl border border-slate-200 bg-white p-5 shadow-2xl dark:border-white/10 dark:bg-[#11141F]">
             {/* Currency Selector */}
             <CurrencySelectorCard currency={selectedCurrency} onPress={() => setPickerOpen(true)} />
 

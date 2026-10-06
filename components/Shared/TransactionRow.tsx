@@ -14,7 +14,7 @@ export function TransactionRow({ tx, onDelete }: { tx: Transaction; onDelete?: (
     tx.input_method === 'RECEIPT_SCAN' ? Camera : tx.input_method === 'VOICE' ? Mic : Edit3
 
   const row = (
-    <View className="flex-row items-center rounded-[18px] border border-slate-200/80 bg-white px-3.5 py-3 shadow-sm dark:border-white/[0.06] dark:bg-[#111420]">
+    <View className="flex-row items-center rounded-[18px] border border-slate-200 bg-white px-3.5 py-3 shadow-sm dark:border-white/[0.06] dark:bg-[#111420]">
       {/* Category Icon with radiant translucent glow */}
       <View
         className="mr-3.5 h-12 w-12 items-center justify-center rounded-2xl border"
