@@ -35,7 +35,7 @@ export function PillGroup<T extends string>({
               isSelected ? 'border-[#00E599] bg-[#00E599]' : 'border-white/10 bg-[#111420]'
             }`}
           >
-            {option.icon && <Text className="text-sm">{option.icon}</Text>}
+            {option.icon && <Text className="mr-0.5 text-lg">{option.icon}</Text>}
             <Text
               className={`text-xs ${
                 isSelected ? 'font-bold text-[#08090D]' : 'font-semibold text-slate-400'

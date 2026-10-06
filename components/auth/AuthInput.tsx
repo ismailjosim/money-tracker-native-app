@@ -1,5 +1,5 @@
-import React from 'react'
-import { Text, TextInput, TextInputProps, View } from 'react-native'
+import React, { useState } from 'react'
+import { Text, TextInput, TextInputProps, View, Platform } from 'react-native'
 
 interface AuthInputProps extends TextInputProps {
   label?: string
@@ -12,28 +12,53 @@ export default function AuthInput({
   error,
   leftIcon,
   editable = true,
+  onFocus,
+  onBlur,
   ...props
 }: AuthInputProps) {
+  const [isFocused, setIsFocused] = useState(false)
+
   return (
-    <View className="mb-5">
-      {label && <Text className="mb-2 text-sm font-semibold text-brand-text-primary">{label}</Text>}
+    <View className="mb-4">
+      {label && (
+        <Text className="mb-1.5 text-xs font-bold uppercase tracking-wider text-slate-400">
+          {label}
+        </Text>
+      )}
 
       <View
-        className={`h-14 flex-row items-center rounded-2xl border bg-brand-surface px-4 ${error ? 'border-brand-coral' : 'border-brand-surface-border'} ${!editable ? 'opacity-60' : ''} `}
+        className={`h-12 flex-row items-center rounded-2xl border bg-[#161B2A] px-3.5 transition-colors ${
+          error
+            ? 'border-[#FF4D6D] bg-red-500/[0.03]'
+            : isFocused
+              ? 'border-[#00E599] shadow-sm shadow-[#00E599]/30'
+              : 'border-white/10'
+        } ${!editable ? 'opacity-50' : ''}`}
       >
-        {leftIcon && <View className="mr-3">{leftIcon}</View>}
+        {leftIcon && <View className="mr-2.5">{leftIcon}</View>}
 
         <TextInput
           {...props}
           editable={editable}
-          placeholderTextColor="#5C5F68"
-          className="flex-1 text-base text-brand-text-primary"
-          cursorColor="#10B981"
-          selectionColor="#10B981"
+          onFocus={e => {
+            setIsFocused(true)
+            onFocus?.(e)
+          }}
+          onBlur={e => {
+            setIsFocused(false)
+            onBlur?.(e)
+          }}
+          placeholderTextColor="#475569"
+          className="flex-1 bg-transparent p-0 text-sm font-semibold text-white outline-none focus:outline-none"
+          style={
+            Platform.OS === 'web' ? ({ outlineStyle: 'none', outline: 'none' } as any) : undefined
+          }
+          cursorColor="#00E599"
+          selectionColor="#00E599"
         />
       </View>
 
-      {error ? <Text className="mt-2 text-xs font-medium text-brand-coral">{error}</Text> : null}
+      {error ? <Text className="ml-1 mt-1 text-xs font-medium text-[#FF4D6D]">{error}</Text> : null}
     </View>
   )
 }

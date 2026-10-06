@@ -36,7 +36,7 @@ export default function SignUpForm({
         showTagline
       />
 
-      <View className="rounded-3xl border border-brand-surface-border bg-brand-surface p-6">
+      <View className="rounded-3xl border border-white/10 bg-[#111420] p-6 shadow-2xl">
         <View className="flex-row gap-4">
           <View className="flex-1">
             <Controller

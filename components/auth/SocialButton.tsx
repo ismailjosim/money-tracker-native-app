@@ -46,7 +46,7 @@ export default function SocialButton({
     <TouchableOpacity
       activeOpacity={0.85}
       disabled={isDisabled}
-      className={`w-full rounded-2xl border border-brand-surface-border bg-brand-surface ${
+      className={`w-full rounded-2xl border border-white/10 bg-[#161B2A] ${
         isDisabled ? 'opacity-60' : ''
       }`}
       {...props}

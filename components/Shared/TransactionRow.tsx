@@ -17,10 +17,10 @@ export function TransactionRow({ tx, onDelete }: { tx: Transaction; onDelete?: (
     <View className="flex-row items-center rounded-[18px] border border-white/[0.06] bg-[#111420] px-3.5 py-3 shadow-sm">
       {/* Category Icon with radiant translucent glow */}
       <View
-        className="mr-3 h-11 w-11 items-center justify-center rounded-full"
-        style={{ backgroundColor: `${config.color}20` }}
+        className="mr-3.5 h-12 w-12 items-center justify-center rounded-2xl border"
+        style={{ backgroundColor: `${config.color}18`, borderColor: `${config.color}35` }}
       >
-        <Text className="text-xl">{config.icon}</Text>
+        <Text className="text-2xl">{config.icon}</Text>
       </View>
 
       {/* Description & Metadata */}

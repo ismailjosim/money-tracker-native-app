@@ -163,7 +163,7 @@ export default function SignUpScreen() {
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
       >
-        <View className="flex-1 justify-center px-6 py-10">
+        <View className="w-full max-w-md flex-1 justify-center self-center px-5 py-6">
           <SignUpForm
             control={signUpForm.control}
             errors={signUpForm.formState.errors}

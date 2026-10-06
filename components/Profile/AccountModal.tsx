@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Text, TextInput, TouchableOpacity, View, Platform } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import * as Haptics from 'expo-haptics'
 import {
@@ -9,6 +9,8 @@ import {
 } from '@/hooks/mutations/useAccountMutations'
 import { Account, AccountType } from '@/lib/services/accounts'
 import { FormSheetModal } from '../Shared/FormSheetModal'
+import { ConfirmDialog } from '../Shared/ConfirmDialog'
+import { toast } from '@/store/useToastStore'
 
 const ACCOUNT_TYPES: AccountType[] = ['CASH', 'BANK', 'CREDIT_CARD', 'SAVINGS']
 
@@ -53,6 +55,8 @@ export function AccountModal({
     }
   }, [visible, account])
 
+  const [deleting, setDeleting] = useState(false)
+
   const handleSave = async () => {
     if (!name.trim()) {
       setError('Please enter an account name.')
@@ -67,45 +71,49 @@ export function AccountModal({
         await createAccount({ name: name.trim(), type })
       }
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {})
+      toast.success(isEditing ? 'Account updated' : 'Account created')
       onSaved()
     } catch {
       setError('Something went wrong. Please try again.')
+      toast.error('Could not save account')
     }
   }
 
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [deleteTransactionCount, setDeleteTransactionCount] = useState(0)
+
   const handleDelete = async () => {
-    if (!account) return
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch(() => {})
+    if (!account || deleting) return
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {})
+    setDeleting(true)
     try {
-      const result = await deleteAccount({ accountId: account.id })
-      if (result.deleted) {
+      const check = await deleteAccount({ accountId: account.id })
+      if (check.deleted) {
+        toast.success('Account deleted')
         onDeleted()
         return
       }
-
-      Alert.alert(
-        'Delete account',
-        `This will also delete ${result.transactionCount} transaction${
-          result.transactionCount === 1 ? '' : 's'
-        }. This can't be undone.`,
-        [
-          { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Delete',
-            style: 'destructive',
-            onPress: async () => {
-              try {
-                await deleteAccount({ accountId: account.id, force: true })
-                onDeleted()
-              } catch {
-                Alert.alert('Error', "Couldn't delete the account.")
-              }
-            },
-          },
-        ]
-      )
+      setDeleteTransactionCount(check.transactionCount)
+      setConfirmOpen(true)
     } catch {
-      Alert.alert('Error', "Couldn't check the account's transactions.")
+      toast.error("Couldn't check account transactions.")
+    } finally {
+      setDeleting(false)
+    }
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!account) return
+    setDeleting(true)
+    try {
+      await deleteAccount({ accountId: account.id, force: true })
+      setConfirmOpen(false)
+      toast.success('Account deleted successfully')
+      onDeleted()
+    } catch {
+      toast.error("Couldn't delete account.")
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -122,7 +130,10 @@ export function AccountModal({
           onChangeText={setName}
           placeholder="e.g. Chase Sapphire / Cash"
           placeholderTextColor="#475569"
-          className="p-0 text-base font-semibold text-white"
+          className="p-0 text-base font-semibold text-white outline-none focus:outline-none"
+          style={
+            Platform.OS === 'web' ? ({ outlineStyle: 'none', outline: 'none' } as any) : undefined
+          }
         />
       </View>
 
@@ -181,10 +192,36 @@ export function AccountModal({
       )}
 
       {isEditing && (
-        <TouchableOpacity onPress={handleDelete} className="items-center py-2.5">
-          <Text className="text-xs font-semibold text-[#FF4D6D]">Delete Account</Text>
+        <TouchableOpacity
+          onPress={handleDelete}
+          disabled={deleting}
+          className="items-center py-2.5"
+        >
+          <Text
+            className={`text-xs font-semibold ${deleting ? 'text-slate-500' : 'text-[#FF4D6D]'}`}
+          >
+            {deleting ? 'Deleting Account…' : 'Delete Account'}
+          </Text>
         </TouchableOpacity>
       )}
+
+      <ConfirmDialog
+        visible={confirmOpen}
+        title="Delete Account?"
+        message={
+          deleteTransactionCount > 0
+            ? `Deleting "${account?.name}" will also permanently remove its ${deleteTransactionCount} associated transaction${
+                deleteTransactionCount === 1 ? '' : 's'
+              }. Are you sure you want to proceed?`
+            : `Are you sure you want to delete "${account?.name}"? This action cannot be undone.`
+        }
+        confirmText="Delete Account"
+        cancelText="Cancel"
+        destructive
+        loading={deleting}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </FormSheetModal>
   )
 }

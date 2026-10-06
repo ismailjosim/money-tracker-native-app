@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { FlatList, Modal, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { FlatList, Modal, Text, TextInput, TouchableOpacity, View, Platform } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import cc from 'currency-codes'
 import getSymbol from 'currency-symbol-map'
@@ -51,7 +51,12 @@ export function CurrencyPicker({
               placeholder="Search currency code or name…"
               placeholderTextColor="#64748B"
               autoFocus
-              className="flex-1 p-0 text-sm text-white"
+              className="flex-1 p-0 text-sm text-white outline-none focus:outline-none"
+              style={
+                Platform.OS === 'web'
+                  ? ({ outlineStyle: 'none', outline: 'none' } as any)
+                  : undefined
+              }
             />
             {search.length > 0 && (
               <TouchableOpacity onPress={() => setSearch('')}>

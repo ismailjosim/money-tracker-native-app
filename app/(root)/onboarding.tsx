@@ -1,26 +1,29 @@
-import useSupabase from '@/hooks/useSupabase'
-import { OnboardingFormValues, onboardingSchema } from '@/lib/schemas/onboarding'
-import { useUserStore } from '@/store/useStore'
-import { useUser } from '@clerk/expo'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Image } from 'expo-image'
-import * as Haptics from 'expo-haptics'
-import { LinearGradient } from 'expo-linear-gradient'
-import { router } from 'expo-router'
-import { CheckCircle2, ChevronDown, Sparkles, AlertTriangle, ArrowRight } from 'lucide-react-native'
-import { useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import React, { useState } from 'react'
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { Image } from 'expo-image'
+import { router } from 'expo-router'
+import { useUser } from '@clerk/expo'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { LinearGradient } from 'expo-linear-gradient'
+import * as Haptics from 'expo-haptics'
+import { AlertTriangle, ArrowRight, CheckCircle2, Sparkles } from 'lucide-react-native'
+
+import useSupabase from '@/hooks/useSupabase'
+import { OnboardingFormValues, onboardingSchema } from '@/lib/schemas/onboarding'
+import { useUserStore } from '@/store/useStore'
 import { ALL_CURRENCIES, CurrencyPicker } from '@/components/Shared/CurrencyPicker'
+import { CurrencySelectorCard } from '@/components/Onboarding/CurrencySelectorCard'
+import { StartingBalanceInput } from '@/components/Onboarding/StartingBalanceInput'
+
 export default function OnboardingScreen() {
   const { user } = useUser()
   const authSupabase = useSupabase()
@@ -47,7 +50,7 @@ export default function OnboardingScreen() {
   const [error, setError] = useState('')
   const [isDbOffline, setIsDbOffline] = useState(false)
 
-  const proceedLocally = (balanceVal?: number) => {
+  const proceedLocally = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {})
     setCurrency(selectedCurrency.code)
     setNeedsOnboarding(false)
@@ -94,57 +97,56 @@ export default function OnboardingScreen() {
         .single()
 
       if (accountFetchError || !defaultAccount) {
-        // Try creating default account if missing
         const { data: createdAccount } = await authSupabase
           .from('accounts')
           .insert({
-            user_id: user?.id ?? '',
-            name: 'Cash Vault',
-            type: 'CASH',
+            user_id: user?.id,
+            name: 'Primary Checking',
+            type: 'BANK',
             balance: parsed,
             is_default: true,
           })
           .select('id')
           .single()
 
-        if (createdAccount) {
+        if (parsed > 0 && createdAccount) {
           await authSupabase.from('transactions').insert({
-            user_id: user?.id ?? '',
+            user_id: user?.id,
             account_id: createdAccount.id,
             type: 'INCOME',
             amount: parsed,
             category: 'other_income',
-            description: 'Starting Balance',
+            description: 'Opening Balance',
             date: new Date().toISOString(),
-            input_method: 'MANUAL',
           })
         }
       } else {
-        await authSupabase.from('transactions').insert({
-          user_id: user?.id ?? '',
-          account_id: defaultAccount.id,
-          type: 'INCOME',
-          amount: parsed,
-          category: 'other_income',
-          description: 'Starting Balance',
-          date: new Date().toISOString(),
-          input_method: 'MANUAL',
-        })
+        await authSupabase.from('accounts').update({ balance: parsed }).eq('id', defaultAccount.id)
 
-        await authSupabase
-          .from('accounts')
-          .update({ balance: (defaultAccount.balance || 0) + parsed })
-          .eq('id', defaultAccount.id)
+        if (parsed > 0) {
+          await authSupabase.from('transactions').insert({
+            user_id: user?.id,
+            account_id: defaultAccount.id,
+            type: 'INCOME',
+            amount: parsed,
+            category: 'other_income',
+            description: 'Opening Balance',
+            date: new Date().toISOString(),
+          })
+        }
       }
 
-      setSaving(false)
-      proceedLocally(parsed)
+      proceedLocally()
     } catch (err: any) {
       setSaving(false)
-      const isFetchErr = err?.message?.toLowerCase().includes('failed to fetch')
-      if (isFetchErr) {
+      const msg = err?.message?.toLowerCase() || ''
+      if (
+        msg.includes('failed to fetch') ||
+        msg.includes('network') ||
+        msg.includes('load failed')
+      ) {
         setIsDbOffline(true)
-        setError('Supabase connection error (Failed to fetch). Database project may be paused.')
+        setError('Database connection timed out or is currently unreachable.')
       } else {
         setError(err?.message || 'Something went wrong. Please try again.')
       }
@@ -182,68 +184,18 @@ export default function OnboardingScreen() {
           {/* Form Card */}
           <View className="rounded-3xl border border-white/10 bg-[#11141F] p-5 shadow-2xl">
             {/* Currency Selector */}
-            <Text className="mb-2 text-[11px] font-bold tracking-wider text-slate-400">
-              BASE CURRENCY
-            </Text>
-            <TouchableOpacity
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
-                setPickerOpen(true)
-              }}
-              activeOpacity={0.8}
-              className="mb-4 flex-row items-center justify-between rounded-2xl border border-white/5 bg-[#161B2A] px-4 py-3.5"
-            >
-              <View className="flex-row items-center gap-3">
-                <View className="h-10 w-10 items-center justify-center rounded-xl border border-[#00E599]/30 bg-[#00E599]/15">
-                  <Text className="text-base font-bold text-[#00E599]">
-                    {selectedCurrency.symbol}
-                  </Text>
-                </View>
-                <View>
-                  <Text className="text-base font-bold tracking-wide text-white">
-                    {selectedCurrency.code}
-                  </Text>
-                  <Text className="text-xs font-medium text-slate-400" numberOfLines={1}>
-                    {selectedCurrency.name}
-                  </Text>
-                </View>
-              </View>
-              <ChevronDown size={18} color="#94A3B8" />
-            </TouchableOpacity>
+            <CurrencySelectorCard currency={selectedCurrency} onPress={() => setPickerOpen(true)} />
 
             {/* Starting Balance */}
-            <Text className="mb-2 text-[11px] font-bold tracking-wider text-slate-400">
-              STARTING BALANCE
-            </Text>
-            <View className="flex-row items-center rounded-2xl border border-white/5 bg-[#161B2A] px-4 py-3">
-              <Text className="mr-2 text-xl font-bold text-[#00E599]">
-                {selectedCurrency.symbol}
-              </Text>
-              <Controller
-                control={control}
-                name="startingBalance"
-                render={({ field: { value, onChange } }) => (
-                  <TextInput
-                    value={value}
-                    onChangeText={v => {
-                      setError('')
-                      setIsDbOffline(false)
-                      onChange(v)
-                    }}
-                    placeholder="0.00"
-                    placeholderTextColor="#475569"
-                    keyboardType="numeric"
-                    returnKeyType="done"
-                    className="flex-1 p-0 text-2xl font-black text-white"
-                  />
-                )}
-              />
-            </View>
-            {formErrors.startingBalance && (
-              <Text className="ml-1 mt-1.5 text-xs font-medium text-[#FF4D6D]">
-                {formErrors.startingBalance.message}
-              </Text>
-            )}
+            <StartingBalanceInput
+              control={control}
+              symbol={selectedCurrency.symbol}
+              errorMessage={formErrors.startingBalance?.message}
+              onClearError={() => {
+                setError('')
+                setIsDbOffline(false)
+              }}
+            />
 
             {/* Error Message with Database Guidance */}
             {error ? (
@@ -302,10 +254,7 @@ export default function OnboardingScreen() {
       <CurrencyPicker
         visible={pickerOpen}
         selectedCode={selectedCurrency.code}
-        onSelect={currency => {
-          setSelectedCurrency(currency)
-          setPickerOpen(false)
-        }}
+        onSelect={curr => setSelectedCurrency(curr)}
         onClose={() => setPickerOpen(false)}
       />
     </SafeAreaView>

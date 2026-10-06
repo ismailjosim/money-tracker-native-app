@@ -197,7 +197,12 @@ export default function AssistantScreen() {
               placeholder="Ask anything about your money..."
               placeholderTextColor="#64748B"
               editable={!sending}
-              className="flex-1 py-2 text-sm text-white"
+              className="flex-1 py-2 text-sm text-white outline-none focus:outline-none"
+              style={
+                Platform.OS === 'web'
+                  ? ({ outlineStyle: 'none', outline: 'none' } as any)
+                  : undefined
+              }
               onSubmitEditing={() => sendMessage(input)}
               returnKeyType="send"
             />

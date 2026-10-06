@@ -28,6 +28,10 @@ async function callGemini(promptText: string, inlineData: { mimeType: string; da
   const apiKey = process.env.EXPO_PUBLIC_GEMINI_API_KEY
   if (!apiKey) throw new Error('Missing EXPO_PUBLIC_GEMINI_API_KEY')
 
+  const cleanData = inlineData.data.includes('base64,')
+    ? inlineData.data.split('base64,')[1]
+    : inlineData.data
+
   const res = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -35,7 +39,10 @@ async function callGemini(promptText: string, inlineData: { mimeType: string; da
       contents: [
         {
           role: 'user',
-          parts: [{ text: promptText }, { inlineData }],
+          parts: [
+            { text: promptText },
+            { inlineData: { mimeType: inlineData.mimeType, data: cleanData } },
+          ],
         },
       ],
       generationConfig: {

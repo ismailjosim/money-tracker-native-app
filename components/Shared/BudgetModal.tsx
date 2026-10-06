@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Text, TextInput, TouchableOpacity, View, Platform } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import * as Haptics from 'expo-haptics'
 import { useUpsertBudget } from '@/hooks/mutations/useBudgetMutations'
 import { Budget } from '@/lib/services/budgets'
 import { FormSheetModal } from './FormSheetModal'
+import { toast } from '@/store/useToastStore'
 
 export function BudgetModal({
   visible,
@@ -41,10 +42,12 @@ export function BudgetModal({
     try {
       await upsertBudget(parsedAmount)
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {})
+      toast.success(budget ? 'Budget updated' : 'Budget set successfully')
       onSaved()
     } catch (err) {
       console.error('Error saving budget:', err)
       setError('Something went wrong. Please try again.')
+      toast.error('Could not save budget')
     }
   }
 
@@ -66,7 +69,10 @@ export function BudgetModal({
           placeholderTextColor="#475569"
           keyboardType="numeric"
           autoFocus
-          className="p-0 text-lg font-bold text-white"
+          className="p-0 text-lg font-bold text-white outline-none focus:outline-none"
+          style={
+            Platform.OS === 'web' ? ({ outlineStyle: 'none', outline: 'none' } as any) : undefined
+          }
         />
       </View>
 

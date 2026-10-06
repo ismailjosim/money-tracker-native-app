@@ -196,7 +196,7 @@ export default function SignInScreen() {
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ flexGrow: 1 }}
       >
-        <View className="flex-1 justify-center px-6 py-10">
+        <View className="w-full max-w-md flex-1 justify-center self-center px-5 py-6">
           <SignInForm
             control={form.control}
             errors={form.formState.errors}

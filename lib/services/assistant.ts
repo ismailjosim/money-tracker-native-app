@@ -1,12 +1,12 @@
-import { getCategoryConfig } from '@/constants/categories'
 import type { Budget } from '@/lib/services/budgets'
 import type { Transaction } from '@/lib/services/transactions'
 
 import { format, isSameMonth, subDays } from 'date-fns'
 import { formatPrice } from '../utils/utils'
+import { getCategoryConfig } from '@/constants/categories'
 
 const GEMINI_URL =
-  'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent'
+  'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent'
 
 function buildContext(transactions: Transaction[], budget: Budget | null, currency: string) {
   const now = new Date()
